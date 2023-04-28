@@ -12,7 +12,7 @@ public class CustomLocaleMessenger {
     @Autowired
     private MessageSource messageSource;
 
-    public String getMessage(String text){
+    public String getMessage(String text) {
         Locale local = LocaleContextHolder.getLocale();
         return messageSource.getMessage(text,null,local);
     }
