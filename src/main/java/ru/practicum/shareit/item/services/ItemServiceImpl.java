@@ -2,9 +2,9 @@ package ru.practicum.shareit.item.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.config.CustomLocaleMessenger;
 import ru.practicum.shareit.exceptions.ItemRequestException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
@@ -21,29 +21,13 @@ public class ItemServiceImpl implements ItemService {
 
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
-
-    @Value("${item.service.notExistId}")
-    private String notExistId;
-
-    @Value("${item.service.notExistUserId}")
-    private String notExistUserId;
-
-    @Value("${item.service.notOwner}")
-    private String notOwner;
-
-    @Value("${item.service.create.name.NotBlank}")
-    private String nameNotBlank;
-
-    @Value("${item.service.create.description.NotBlank}")
-    private String descriptionNotBlank;
-
-    @Value("${item.service.create.available.NotNull}")
-    private String availableNotNull;
+    private final CustomLocaleMessenger messenger;
 
     @Autowired
-    public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage) {
+    public ItemServiceImpl(ItemStorage itemStorage, UserStorage userStorage, CustomLocaleMessenger messenger) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
+        this.messenger = messenger;
     }
 
     @Override
@@ -70,17 +54,17 @@ public class ItemServiceImpl implements ItemService {
     public ItemDto create(Item item) {
         existsUserId(item.getOwnerId());
         if (item.getName() == null || item.getName().isBlank()) {
-            String message = String.format(nameNotBlank);
+            String message = String.format(messenger.getMessage("item.service.create.name.NotBlank"));
             log.info(message);
             throw new ItemRequestException(message);
         }
         if (item.getDescription() == null || item.getDescription().isBlank()) {
-            String message = String.format(descriptionNotBlank);
+            String message = String.format(messenger.getMessage("item.service.create.description.NotBlank"));
             log.info(message);
             throw new ItemRequestException(message);
         }
         if (item.getAvailable() == null) {
-            String message = String.format(availableNotNull);
+            String message = String.format(messenger.getMessage("item.service.create.available.NotNull"));
             log.info(message);
             throw new ItemRequestException(message);
         }
@@ -94,7 +78,7 @@ public class ItemServiceImpl implements ItemService {
         existsUserId(item.getOwnerId());
         Item old = itemStorage.findById(item.getId());
         if (old.getOwnerId() != item.getOwnerId()) {
-            String message = String.format(notOwner, item.getId());
+            String message = String.format(messenger.getMessage("item.service.notOwner"), item.getId());
             log.info(message);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
@@ -110,7 +94,7 @@ public class ItemServiceImpl implements ItemService {
 
     private void existsItemId(long id) {
         if (!itemStorage.existsId(id)) {
-            String message = String.format(notExistId, id);
+            String message = String.format(messenger.getMessage("item.service.notExistId"), id);
             log.info(message);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
@@ -118,7 +102,7 @@ public class ItemServiceImpl implements ItemService {
 
     private void existsUserId(long id) {
         if (!userStorage.existsId(id)) {
-            String message = String.format(notExistUserId, id);
+            String message = String.format(messenger.getMessage("item.service.notExistUserId"), id);
             log.info(message);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }

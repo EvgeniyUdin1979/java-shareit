@@ -1,7 +1,6 @@
 package ru.practicum.shareit.advice;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
@@ -10,6 +9,7 @@ import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import ru.practicum.shareit.config.CustomLocaleMessenger;
 import ru.practicum.shareit.exceptions.CustomRequestException;
 
 import javax.validation.ConstraintViolation;
@@ -21,10 +21,11 @@ import java.util.List;
 @RestControllerAdvice
 public class CustomAdvice {
 
-    @Value("${advice.typeMismatchException}")
-    private String typeMismatchException;
-    @Value("${item.controller.missingRequestHeader}")
-    private String missingRequestHeader;
+    public final CustomLocaleMessenger messenger;
+
+    public CustomAdvice(CustomLocaleMessenger messenger) {
+        this.messenger = messenger;
+    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Response> handleBindException(ConstraintViolationException cve) {
@@ -35,7 +36,7 @@ public class CustomAdvice {
         }
         String message = builder.toString().trim();
         log.info(message);
-        return new ResponseEntity<>(new Response(message), HttpStatus.BAD_REQUEST);
+        return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(CustomRequestException.class)
@@ -52,20 +53,22 @@ public class CustomAdvice {
         }
 
         log.info(message.toString().trim());
-        return new ResponseEntity<>(new Response(message.toString().trim()), HttpStatus.BAD_REQUEST);
+        return getResponse(HttpStatus.BAD_REQUEST, message.toString().trim());
     }
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Response> typeMismatchException(MethodArgumentTypeMismatchException ex) {
-        log.info(typeMismatchException);
-        return getResponse(HttpStatus.BAD_REQUEST, typeMismatchException);
+        String message = messenger.getMessage("advice.typeMismatchException");
+        log.info(message);
+        return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     private ResponseEntity<Response> typeMismatchException(MissingRequestHeaderException ex) {
-        log.info(missingRequestHeader);
-        return new ResponseEntity<>(new Response(missingRequestHeader), HttpStatus.BAD_REQUEST);
+        String message = messenger.getMessage("advice.missingRequestHeader");
+        log.info(message);
+        return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     private ResponseEntity<Response> getResponse(HttpStatus httpStatus, String message) {

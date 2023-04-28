@@ -2,9 +2,9 @@ package ru.practicum.shareit.user.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import ru.practicum.shareit.config.CustomLocaleMessenger;
 import ru.practicum.shareit.exceptions.UserRequestException;
 import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
@@ -22,18 +22,12 @@ import static ru.practicum.shareit.user.util.MappingUser.mapToUpdate;
 public class UserServiceImpl implements UserService {
 
     private final UserStorage userStorage;
-
-    @Value("${user.service.notFindUserById}")
-    private String notFindUserById;
-
-    @Value("${user.service.existsEmail}")
-    private String existsEmail;
-    @Value("${user.service.notNullEmail}")
-    private String notNullEmail;
+    private final CustomLocaleMessenger messenger;
 
     @Autowired
-    public UserServiceImpl(UserStorage userStorage) {
+    public UserServiceImpl(UserStorage userStorage, CustomLocaleMessenger messenger) {
         this.userStorage = userStorage;
+        this.messenger = messenger;
     }
 
     public List<UserDto> findAll() {
@@ -49,7 +43,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto create(User user) {
         if (user.getEmail() == null || user.getEmail().isBlank()) {
-            throw new UserRequestException(notNullEmail);
+            String message = messenger.getMessage("user.service.notNullEmail");
+            log.info(message);
+            throw new UserRequestException(message);
         }
         existsEmail(user.getEmail());
         return mapToDto(userStorage.add(user));
@@ -79,7 +75,7 @@ public class UserServiceImpl implements UserService {
 
     private void existsId(long userId) {
         if (!userStorage.existsId(userId)) {
-            String message = String.format(notFindUserById, userId);
+            String message = String.format(messenger.getMessage("user.service.notFindUserById"), userId);
             log.info(message);
             throw new UserRequestException(message, HttpStatus.NOT_FOUND);
         }
@@ -87,7 +83,7 @@ public class UserServiceImpl implements UserService {
 
     private void existsEmail(String email) {
         if (userStorage.existsEmail(email)) {
-            String message = String.format(existsEmail, email);
+            String message = String.format(messenger.getMessage("user.service.existsEmail"), email);
             log.info(message);
             throw new UserRequestException(message, HttpStatus.CONFLICT);
         }
