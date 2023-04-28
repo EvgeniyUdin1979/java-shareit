@@ -4,22 +4,31 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 
 public class MappingUser {
-    public static User mapDtoToUser(UserDto userDto, User user){
-        if (userDto.getName() != null){
-            user.setName(userDto.getName());
-        }
-        if (userDto.getEmail() != null){
-            user.setEmail(userDto.getEmail());
-        }
-        return user;
+    public static User mapToUser(UserDto userDto) {
+
+        return User.builder()
+                .id(userDto.getId())
+                .name(userDto.getName())
+                .email(userDto.getEmail())
+                .build();
     }
 
-    public static UserDto mapUserToDto(User user){
+    public static UserDto mapToDto(User user) {
         return UserDto.builder()
                 .id(user.getId())
                 .name(user.getName())
                 .email(user.getEmail())
                 .build();
+    }
+
+    public static User mapToUpdate(User newest, User old) {
+        if (newest.getName() != null) {
+            old.setName(newest.getName());
+        }
+        if (newest.getEmail() != null) {
+            old.setEmail(newest.getEmail());
+        }
+        return old;
     }
 
 }

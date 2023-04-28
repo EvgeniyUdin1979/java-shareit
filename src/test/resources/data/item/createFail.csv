@@ -1,0 +1,7 @@
+"Пользователь с id 2 не найден."|"2"|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|"X-Sharer-User-Id"|404
+"id пользователя не может быть отрицательным или равен 0."|"-1"|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|"X-Sharer-User-Id"|400
+"Параметр id не является числом."|"a"|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|"X-Sharer-User-Id"|400
+"Отсутствует указание пользователя для данного запроса."|"1"|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|"X-Sharer-User"|400
+"Описание не может отсутствовать или быть пустым."|"1"|{"name": "user","email": "user@user.com"}|{"name": "Дрель"}|"X-Sharer-User-Id"|400
+"Название не может отсутствовать или быть пустым."|"1"|{"name": "user","email": "user@user.com"}|{"description": "Простая дрель"}|"X-Sharer-User-Id"|400
+"Доступность не может отсутствовать."|"1"|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель"}|"X-Sharer-User-Id"|400

@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
@@ -20,18 +21,21 @@ import java.util.List;
 @RestControllerAdvice
 public class CustomAdvice {
 
-//    @Value("${advice.typeMismatchException}")
-    private String typeMismatchException = "{advice.typeMismatchException}";
+    @Value("${advice.typeMismatchException}")
+    private String typeMismatchException;
+    @Value("${item.controller.missingRequestHeader}")
+    private String missingRequestHeader;
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Response> handleBindException(ConstraintViolationException cve) {
         List<ConstraintViolation<?>> constraintViolations = new ArrayList<>(cve.getConstraintViolations());
-        StringBuilder message = new StringBuilder();
+        StringBuilder builder = new StringBuilder();
         for (ConstraintViolation<?> constraintViolation : constraintViolations) {
-            message.append(constraintViolation.getMessageTemplate());
+            builder.append(constraintViolation.getMessage());
         }
-        log.info(message.toString().trim());
-        return new ResponseEntity<>(new Response(message.toString().trim()), HttpStatus.BAD_REQUEST);
+        String message = builder.toString().trim();
+        log.info(message);
+        return new ResponseEntity<>(new Response(message), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(CustomRequestException.class)
@@ -53,9 +57,15 @@ public class CustomAdvice {
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<Response> typeMismatchException(MethodArgumentTypeMismatchException ex){
+    public ResponseEntity<Response> typeMismatchException(MethodArgumentTypeMismatchException ex) {
         log.info(typeMismatchException);
-        return getResponse(HttpStatus.BAD_REQUEST,typeMismatchException);
+        return getResponse(HttpStatus.BAD_REQUEST, typeMismatchException);
+    }
+
+    @ExceptionHandler(MissingRequestHeaderException.class)
+    private ResponseEntity<Response> typeMismatchException(MissingRequestHeaderException ex) {
+        log.info(missingRequestHeader);
+        return new ResponseEntity<>(new Response(missingRequestHeader), HttpStatus.BAD_REQUEST);
     }
 
     private ResponseEntity<Response> getResponse(HttpStatus httpStatus, String message) {

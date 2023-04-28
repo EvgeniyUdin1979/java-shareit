@@ -1,0 +1,4 @@
+"/2"|"Предмет с id 2 не найден."|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|404
+"/0"|"id пользователя не может быть отрицательным или равен 0."|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|400
+"/-1"|"id пользователя не может быть отрицательным или равен 0."|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|400
+"/a"|"Параметр id не является числом."|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|400

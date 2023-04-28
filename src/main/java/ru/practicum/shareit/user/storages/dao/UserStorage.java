@@ -1,15 +1,15 @@
-package ru.practicum.shareit.user.storage.dao;
+package ru.practicum.shareit.user.storages.dao;
 
 import ru.practicum.shareit.user.model.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserDao {
+public interface UserStorage {
 
     List<User> findAll();
 
-    Optional<User> findById(long userId );
+    Optional<User> findById(long userId);
 
     User add(User user);
 

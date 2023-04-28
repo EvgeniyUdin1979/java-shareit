@@ -1,8 +1,8 @@
-package ru.practicum.shareit.user.storage;
+package ru.practicum.shareit.user.storages;
 
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.user.model.User;
-import ru.practicum.shareit.user.storage.dao.UserDao;
+import ru.practicum.shareit.user.storages.dao.UserStorage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UserDaoMemoryImpl implements UserDao {
+public class UserStorageInMemoryImpl implements UserStorage {
 
     HashMap<Long, User> users = new HashMap<>();
 
