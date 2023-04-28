@@ -12,7 +12,7 @@ import java.util.Optional;
 @Repository
 public class UserStorageInMemoryImpl implements UserStorage {
 
-    HashMap<Long, User> users = new HashMap<>();
+    private final HashMap<Long, User> users = new HashMap<>();
 
     private long globalId = 1L;
 

@@ -13,7 +13,7 @@ import java.util.stream.Collectors;
 @Repository
 public class ItemStorageInMemoryImpl implements ItemStorage {
 
-    HashMap<Long, Item> items = new HashMap<>();
+    private final HashMap<Long, Item> items = new HashMap<>();
 
     private long globalId = 1;
 

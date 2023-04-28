@@ -2,8 +2,9 @@ package ru.practicum.shareit.exceptions;
 
 import org.springframework.http.HttpStatus;
 
-public class CustomRequestException extends RuntimeException{
+public class CustomRequestException extends RuntimeException {
     private HttpStatus status;
+
     public CustomRequestException() {
         super();
     }
