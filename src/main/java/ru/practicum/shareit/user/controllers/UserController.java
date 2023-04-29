@@ -8,8 +8,9 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.services.UserService;
 import ru.practicum.shareit.user.util.MappingUser;
+import ru.practicum.shareit.validate.Create;
+import ru.practicum.shareit.validate.Update;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -48,7 +49,8 @@ public class UserController {
     }
 
     @PostMapping
-    public UserDto create(@Valid @RequestBody UserDto userDto) {
+    @Validated(value = Create.class)
+    public UserDto create(@Validated(value = Create.class) @RequestBody UserDto userDto) {
         User user = MappingUser.mapToUser(userDto);
         UserDto createUser = service.create(user);
         log.info("Создан пользователь {}.", createUser);
@@ -56,7 +58,7 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@Valid @RequestBody UserDto userDto,
+    public UserDto update(@Validated(value = Update.class) @RequestBody UserDto userDto,
                           @PathVariable @Positive(message = "{user.controller.idNotPositive}") long id) {
         userDto.setId(id);
         User user = MappingUser.mapToUser(userDto);

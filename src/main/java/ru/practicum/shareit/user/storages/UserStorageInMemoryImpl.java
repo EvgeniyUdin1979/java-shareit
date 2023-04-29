@@ -7,7 +7,6 @@ import ru.practicum.shareit.user.storages.dao.UserStorage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Repository
 public class UserStorageInMemoryImpl implements UserStorage {
@@ -22,8 +21,8 @@ public class UserStorageInMemoryImpl implements UserStorage {
     }
 
     @Override
-    public Optional<User> findById(long userId) {
-        return Optional.ofNullable(users.get(userId));
+    public User findById(long userId) {
+        return users.get(userId);
     }
 
     @Override

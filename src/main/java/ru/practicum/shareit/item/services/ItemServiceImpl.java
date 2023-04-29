@@ -32,14 +32,14 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<ItemDto> findAllByUserId(long userId) {
-        existsUserId(userId);
+        isExistsUserId(userId);
         return itemStorage.findAllByUserId(userId).stream()
                 .map(MappingItem::mapToDto).collect(Collectors.toList());
     }
 
     @Override
     public ItemDto findById(long id) {
-        existsItemId(id);
+        isExistsItemId(id);
         Item item = itemStorage.findById(id);
         return MappingItem.mapToDto(item);
     }
@@ -52,34 +52,19 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public ItemDto create(Item item) {
-        existsUserId(item.getOwnerId());
-        if (item.getName() == null || item.getName().isBlank()) {
-            String message = String.format(messenger.getMessage("item.service.create.name.NotBlank"));
-            log.info(message);
-            throw new ItemRequestException(message);
-        }
-        if (item.getDescription() == null || item.getDescription().isBlank()) {
-            String message = String.format(messenger.getMessage("item.service.create.description.NotBlank"));
-            log.info(message);
-            throw new ItemRequestException(message);
-        }
-        if (item.getAvailable() == null) {
-            String message = String.format(messenger.getMessage("item.service.create.available.NotNull"));
-            log.info(message);
-            throw new ItemRequestException(message);
-        }
-        Item createItem = itemStorage.create(item);
-        return MappingItem.mapToDto(createItem);
+        isExistsUserId(item.getOwnerId());
+        Item createdItem = itemStorage.create(item);
+        return MappingItem.mapToDto(createdItem);
     }
 
     @Override
     public ItemDto update(Item item) {
-        existsItemId(item.getId());
-        existsUserId(item.getOwnerId());
+        isExistsItemId(item.getId());
+        isExistsUserId(item.getOwnerId());
         Item old = itemStorage.findById(item.getId());
         if (old.getOwnerId() != item.getOwnerId()) {
             String message = String.format(messenger.getMessage("item.service.notOwner"), item.getId());
-            log.info(message);
+            log.info("У предмета с id {} другой хозяин.", item.getId());
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
         Item forUpdate = MappingItem.mapToUpdate(item, old);
@@ -92,18 +77,18 @@ public class ItemServiceImpl implements ItemService {
         itemStorage.resetDb();
     }
 
-    private void existsItemId(long id) {
+    private void isExistsItemId(long id) {
         if (!itemStorage.existsId(id)) {
             String message = String.format(messenger.getMessage("item.service.notExistId"), id);
-            log.info(message);
+            log.info("Предмет с id {} не найден.", id);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
     }
 
-    private void existsUserId(long id) {
+    private void isExistsUserId(long id) {
         if (!userStorage.existsId(id)) {
             String message = String.format(messenger.getMessage("item.service.notExistUserId"), id);
-            log.info(message);
+            log.info("Пользователь с id {} не найден.", id);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
     }

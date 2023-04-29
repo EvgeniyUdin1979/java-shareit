@@ -8,8 +8,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.services.ItemService;
 import ru.practicum.shareit.item.util.MappingItem;
+import ru.practicum.shareit.validate.Create;
+import ru.practicum.shareit.validate.Update;
 
-import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -54,7 +55,7 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemDto create(@Valid
+    public ItemDto create(@Validated(value = Create.class)
                           @RequestBody ItemDto itemDto,
                           @RequestHeader(value = "X-Sharer-User-Id")
                           @Positive(message = "{item.controller.userIdNotPositive}")
@@ -67,7 +68,7 @@ public class ItemController {
     }
 
     @PatchMapping("/{id}")
-    public ItemDto update(@Valid
+    public ItemDto update(@Validated(value = Update.class)
                           @RequestBody ItemDto itemDto,
                           @RequestHeader(value = "X-Sharer-User-Id")
                           @Positive(message = "{item.controller.userIdNotPositive}")

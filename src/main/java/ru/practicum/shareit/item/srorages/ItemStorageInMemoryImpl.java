@@ -34,8 +34,10 @@ public class ItemStorageInMemoryImpl implements ItemStorage {
             return new ArrayList<>();
         }
         return items.values().stream()
-                .filter(item -> (item.getName().toLowerCase(Locale.ROOT).contains(text.toLowerCase(Locale.ROOT)) && item.getAvailable())
-                        || (item.getDescription().toLowerCase(Locale.ROOT).contains(text.toLowerCase(Locale.ROOT)) && item.getAvailable())).collect(Collectors.toList());
+                .filter(Item::getAvailable)
+                .filter(item -> (item.getName().toLowerCase(Locale.ROOT).contains(text.toLowerCase(Locale.ROOT)))
+                        || (item.getDescription().toLowerCase(Locale.ROOT).contains(text.toLowerCase(Locale.ROOT))))
+                .collect(Collectors.toList());
     }
 
     @Override

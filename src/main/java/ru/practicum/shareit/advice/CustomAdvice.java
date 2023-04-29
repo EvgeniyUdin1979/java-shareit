@@ -3,7 +3,6 @@ package ru.practicum.shareit.advice;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingRequestHeaderException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -14,8 +13,8 @@ import ru.practicum.shareit.exceptions.CustomRequestException;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -29,10 +28,10 @@ public class CustomAdvice {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Response> handleBindException(ConstraintViolationException cve) {
-        List<ConstraintViolation<?>> constraintViolations = new ArrayList<>(cve.getConstraintViolations());
+        List<String> errorMessages = cve.getConstraintViolations().stream().map(ConstraintViolation::getMessage).sorted().collect(Collectors.toList());
         StringBuilder builder = new StringBuilder();
-        for (ConstraintViolation<?> constraintViolation : constraintViolations) {
-            builder.append(constraintViolation.getMessage());
+        for (String errorMessage : errorMessages) {
+            builder.append(errorMessage);
         }
         String message = builder.toString().trim();
         log.info(message);
@@ -46,28 +45,28 @@ public class CustomAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response> handleException(MethodArgumentNotValidException ex) {
-        StringBuilder message = new StringBuilder();
-        Object target = ex.getBindingResult().getTarget();
-        for (ObjectError error : ex.getAllErrors()) {
-            message.append(error.getDefaultMessage());
+        List<String> errorMessages = ex.getAllErrors().stream().map(e -> e.getDefaultMessage()).sorted().collect(Collectors.toList());
+        StringBuilder builder = new StringBuilder();
+        for (String errorMessage : errorMessages) {
+            builder.append(errorMessage);
         }
-
-        log.info(message.toString().trim());
-        return getResponse(HttpStatus.BAD_REQUEST, message.toString().trim());
+        String message = builder.toString().trim();
+        log.info(message);
+        return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Response> typeMismatchException(MethodArgumentTypeMismatchException ex) {
         String message = messenger.getMessage("advice.typeMismatchException");
-        log.info(message);
+        log.info("Параметр id не является числом. {}", ex.getName());
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     private ResponseEntity<Response> typeMismatchException(MissingRequestHeaderException ex) {
         String message = messenger.getMessage("advice.missingRequestHeader");
-        log.info(message);
+        log.info("Отсутствует указание пользователя для данного запроса.{}", ex.getHeaderName());
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
