@@ -15,7 +15,7 @@ public class UserDto {
 
     private String name;
 
-    @Email(groups = {Create.class, Update.class},message = "{user.dto.email}")
-    @NotBlank(groups ={Create.class},message = "{user.dto.notBlankEmail}")
+    @Email(groups = {Create.class, Update.class}, message = "{user.dto.email}")
+    @NotBlank(groups = {Create.class}, message = "{user.dto.notBlankEmail}")
     private String email;
 }
