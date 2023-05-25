@@ -21,7 +21,7 @@ public class UserStorageInMemoryImpl implements UserStorage {
     }
 
     @Override
-    public User findById(long userId) {
+    public User findUserById(long userId) {
         return users.get(userId);
     }
 

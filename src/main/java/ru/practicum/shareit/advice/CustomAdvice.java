@@ -1,6 +1,7 @@
 package ru.practicum.shareit.advice;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -39,7 +40,10 @@ public class CustomAdvice {
     }
 
     @ExceptionHandler(CustomRequestException.class)
-    public ResponseEntity<Response> handleUserException(CustomRequestException re) {
+    public ResponseEntity<?> handleUserException(CustomRequestException re) {
+        if (re.getMessage().startsWith("Не верный параметр запроса state")) {
+            return new ResponseEntity<>(new Error("Unknown state: UNSUPPORTED_STATUS"), HttpStatus.BAD_REQUEST);
+        }
         return getResponse(re.getStatus(), re.getMessage());
     }
 
@@ -53,6 +57,12 @@ public class CustomAdvice {
         String message = builder.toString().trim();
         log.info(message);
         return getResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Response> handleException(DataIntegrityViolationException ex) {
+        String message = messenger.getMessage("service.existsEmail");
+        return getResponse(HttpStatus.CONFLICT, message);
     }
 
 

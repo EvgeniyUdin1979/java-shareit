@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.config.CustomLocaleMessenger;
@@ -25,11 +26,12 @@ public class UserServiceImpl implements UserService {
     private final CustomLocaleMessenger messenger;
 
     @Autowired
-    public UserServiceImpl(UserStorage userStorage, CustomLocaleMessenger messenger) {
+    public UserServiceImpl(@Qualifier(value = "userJpa") UserStorage userStorage, CustomLocaleMessenger messenger) {
         this.userStorage = userStorage;
         this.messenger = messenger;
     }
 
+    @Override
     public List<UserDto> findAll() {
         return userStorage.findAll().stream().map(MappingUser::mapToDto).collect(Collectors.toList());
     }
@@ -37,19 +39,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findById(long userId) {
         isExistsId(userId);
-        return mapToDto(userStorage.findById(userId));
+        return mapToDto(userStorage.findUserById(userId));
     }
 
     @Override
     public UserDto create(User user) {
-        isExistsEmail(user.getEmail());
+//        isExistsEmail(user.getEmail());
         return mapToDto(userStorage.add(user));
     }
 
     @Override
     public UserDto update(User user) {
         isExistsId(user.getId());
-        User userOld = userStorage.findById(user.getId());
+        User userOld = userStorage.findUserById(user.getId());
         if (user.getEmail() != null && !user.getEmail().equals(userOld.getEmail())) {
             isExistsEmail(user.getEmail());
         }
@@ -78,7 +80,7 @@ public class UserServiceImpl implements UserService {
 
     private void isExistsEmail(String email) {
         if (userStorage.existsEmail(email)) {
-            String message = String.format(messenger.getMessage("user.service.existsEmail"), email);
+            String message = String.format(messenger.getMessage("service.existsEmail"), email);
             log.info(String.format("Пользователь с email %s уже существует.",email));
             throw new UserRequestException(message, HttpStatus.CONFLICT);
         }
