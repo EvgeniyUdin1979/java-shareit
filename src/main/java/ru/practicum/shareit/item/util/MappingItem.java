@@ -53,16 +53,27 @@ public class MappingItem {
     }
 
     public static Item mapToUpdate(ItemInDto newestDto, Item old) {
+        Item newest = Item.builder()
+                .id(old.getId())
+                .owner(old.getOwner())
+                .comments(old.getComments())
+                .build();
         if (newestDto.getName() != null) {
-            old.setName(newestDto.getName());
+            newest.setName(newestDto.getName());
+        } else {
+            newest.setName(old.getName());
         }
         if (newestDto.getDescription() != null) {
-            old.setDescription(newestDto.getDescription());
+            newest.setDescription(newestDto.getDescription());
+        } else {
+            newest.setDescription(old.getDescription());
         }
         if (newestDto.getAvailable() != null) {
-            old.setAvailable(newestDto.getAvailable());
+            newest.setAvailable(newestDto.getAvailable());
+        } else {
+            newest.setAvailable(old.getAvailable());
         }
-        return old;
+        return newest;
     }
 
     public static CommentOutDto mapCommentToDto(Comment comment) {
