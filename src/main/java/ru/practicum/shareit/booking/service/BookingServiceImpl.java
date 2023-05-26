@@ -2,7 +2,6 @@ package ru.practicum.shareit.booking.service;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,8 +37,8 @@ public class BookingServiceImpl implements BookingService {
 
     @Autowired
     public BookingServiceImpl(BookingStorage bookingStorage,
-                              @Qualifier("userJpa") UserStorage userStorage,
-                              @Qualifier("itemJpa") ItemStorage itemStorage,
+                              UserStorage userStorage,
+                              ItemStorage itemStorage,
                               CustomLocaleMessenger messenger) {
         this.bookingStorage = bookingStorage;
         this.userStorage = userStorage;
@@ -57,23 +56,23 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemStorage.findItemById(itemId);
         if (item.getOwner().getId() == userId) {
             String message = messenger.getMessage("booking.service.ownerNotCreate");
-            log.info("Владелец предмета не может создавать бронирование на собственные вещи!");
+            log.warn("Владелец предмета не может создавать бронирование на собственные вещи!");
             throw new BookingRequestException(message, HttpStatus.NOT_FOUND);
         }
         if (!item.getAvailable()) {
             String message = messenger.getMessage("booking.service.notAvailable");
-            log.info("Данный предмет не доступен для бронирования: {}", bookingInDto);
+            log.warn("Данный предмет не доступен для бронирования: {}", bookingInDto);
             throw new BookingRequestException(message);
         }
         LocalDateTime start = bookingInDto.getStart();
         LocalDateTime end = bookingInDto.getEnd();
         if (start.isEqual(end)) {
             String message = messenger.getMessage("booking.service.timeIsEqual");
-            log.info("Время начала бронирования равно окончанию: {}", bookingInDto);
+            log.warn("Время начала бронирования равно окончанию: {}", bookingInDto);
             throw new BookingRequestException(message);
         } else if (start.isAfter(end)) {
             String message = messenger.getMessage("booking.service.startIsAfterEnd");
-            log.info("Время начала бронирования после окончанию: {}", bookingInDto);
+            log.warn("Время начала бронирования после окончанию: {}", bookingInDto);
             throw new BookingRequestException(message);
         }
         User booker = userStorage.findUserById(userId);
@@ -105,7 +104,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingOutDto approval(long userId, long bookingId, Optional<Boolean> approved) {
         boolean isApproved = approved.orElseThrow(() -> {
             String message = String.format(messenger.getMessage("booking.service.missingApproved"), userId, bookingId);
-            log.info("Отсутствует обязательный параметр запроса approved.");
+            log.warn("Отсутствует обязательный параметр запроса approved.");
             return new BookingRequestException(message);
         });
         isExistsUserId(userId);
@@ -114,7 +113,7 @@ public class BookingServiceImpl implements BookingService {
         User owner = booking.getItem().getOwner();
         if (owner.getId() != userId) {
             String message = String.format(messenger.getMessage("booking.service.notOwner"), userId, bookingId);
-            log.info("Пользователь id: {} не является хозяином предмета id: {}", userId, bookingId);
+            log.warn("Пользователь id: {} не является хозяином предмета id: {}", userId, bookingId);
             throw new BookingRequestException(message, HttpStatus.NOT_FOUND);
         }
         Status status;
@@ -125,7 +124,7 @@ public class BookingServiceImpl implements BookingService {
         }
         if (booking.getStatus() == status) {
             String message = String.format(messenger.getMessage("booking.service.statusAgainChange"), status.name());
-            log.info("Статус бронирования уже изменен на: {}.", status.name());
+            log.warn("Статус бронирования уже изменен на: {}.", status.name());
             throw new BookingRequestException(message);
         }
         booking.setStatus(status);
@@ -171,7 +170,7 @@ public class BookingServiceImpl implements BookingService {
     private void isExistsItemId(long id) {
         if (!itemStorage.existsId(id)) {
             String message = String.format(messenger.getMessage("item.service.notExistId"), id);
-            log.info("Предмет с id {} не найден.", id);
+            log.warn("Предмет с id {} не найден.", id);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
     }
@@ -179,7 +178,7 @@ public class BookingServiceImpl implements BookingService {
     private void isExistsUserId(long id) {
         if (!userStorage.existsId(id)) {
             String message = String.format(messenger.getMessage("item.service.notExistUserId"), id);
-            log.info("Пользователь с id {} не найден.", id);
+            log.warn("Пользователь с id {} не найден.", id);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
     }
@@ -187,7 +186,7 @@ public class BookingServiceImpl implements BookingService {
     private void isExistsBookingId(long id) {
         if (!bookingStorage.existsId(id)) {
             String message = String.format(messenger.getMessage("booing.service.notExistId"), id);
-            log.info("Бронирование с id {} не найден.", id);
+            log.warn("Бронирование с id {} не найден.", id);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
     }

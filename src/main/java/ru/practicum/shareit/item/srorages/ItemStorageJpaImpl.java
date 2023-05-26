@@ -23,7 +23,7 @@ import javax.sql.DataSource;
 import java.time.LocalDateTime;
 import java.util.List;
 
-@Repository(value = "itemJpa")
+@Repository
 public class ItemStorageJpaImpl implements ItemStorage, CommentRepository {
 
     private final ItemStorageJpaRepository repository;

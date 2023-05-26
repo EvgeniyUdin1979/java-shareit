@@ -35,7 +35,7 @@ public class CustomAdvice {
             builder.append(errorMessage);
         }
         String message = builder.toString().trim();
-        log.info(message);
+        log.warn(message);
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
@@ -55,7 +55,7 @@ public class CustomAdvice {
             builder.append(errorMessage);
         }
         String message = builder.toString().trim();
-        log.info(message);
+        log.warn(message);
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
@@ -69,14 +69,14 @@ public class CustomAdvice {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Response> typeMismatchException(MethodArgumentTypeMismatchException ex) {
         String message = messenger.getMessage("advice.typeMismatchException");
-        log.info("Параметр id не является числом. {}", ex.getName());
+        log.warn("Параметр id не является числом. {}", ex.getName());
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     private ResponseEntity<Response> typeMismatchException(MissingRequestHeaderException ex) {
         String message = messenger.getMessage("advice.missingRequestHeader");
-        log.info("Отсутствует указание пользователя для данного запроса.{}", ex.getHeaderName());
+        log.warn("Отсутствует указание пользователя для данного запроса.{}", ex.getHeaderName());
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 

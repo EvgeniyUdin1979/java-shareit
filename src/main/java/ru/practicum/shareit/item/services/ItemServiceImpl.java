@@ -2,7 +2,6 @@ package ru.practicum.shareit.item.services;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,8 +32,8 @@ public class ItemServiceImpl implements ItemService {
     private final CustomLocaleMessenger messenger;
 
     @Autowired
-    public ItemServiceImpl(@Qualifier(value = "itemJpa") ItemStorage itemStorage,
-                           @Qualifier(value = "userJpa") UserStorage userStorage,
+    public ItemServiceImpl(ItemStorage itemStorage,
+                           UserStorage userStorage,
                            BookingStorage bookingStorage, CustomLocaleMessenger messenger) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
@@ -95,11 +94,11 @@ public class ItemServiceImpl implements ItemService {
         Item old = itemStorage.findItemById(itemId);
         if (old.getOwner().getId() != ownerId) {
             String message = String.format(messenger.getMessage("item.service.notOwner"), itemId);
-            log.info("У предмета с id {} другой хозяин.", itemId);
+            log.warn("У предмета с id {} другой хозяин.", itemId);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
-        MappingItem.mapToUpdate(itemInDto, old);
-        Item updateItem = itemStorage.update(old);
+        Item newest = MappingItem.mapToUpdate(itemInDto, old);
+        Item updateItem = itemStorage.update(newest);
         return MappingItem.mapToDto(updateItem);
     }
 
@@ -111,7 +110,7 @@ public class ItemServiceImpl implements ItemService {
         List<Booking> allPastBookings = bookingStorage.findAllBookingsForBookerOrOwner(true, authorId, State.PAST);
         if (allPastBookings.size() == 0 || allPastBookings.stream().noneMatch(b -> b.getStatus() == Status.APPROVED)) {
             String message = String.format(messenger.getMessage("item.service.notBookingForItem"), authorId, itemId);
-            log.info("У пользователя с id: {} нет подтвержденных завершенных бронирований на предмет с id: {}", authorId, itemId);
+            log.warn("У пользователя с id: {} нет подтвержденных завершенных бронирований на предмет с id: {}", authorId, itemId);
             throw new ItemRequestException(message);
         }
         return MappingItem.mapCommentToDto(itemStorage.add(authorId, itemId, inDto.getText()));
@@ -125,7 +124,7 @@ public class ItemServiceImpl implements ItemService {
     private void isExistsItemId(long id) {
         if (!itemStorage.existsId(id)) {
             String message = String.format(messenger.getMessage("item.service.notExistId"), id);
-            log.info("Предмет с id {} не найден.", id);
+            log.warn("Предмет с id {} не найден.", id);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
     }
@@ -133,7 +132,7 @@ public class ItemServiceImpl implements ItemService {
     private void isExistsUserId(long id) {
         if (!userStorage.existsId(id)) {
             String message = String.format(messenger.getMessage("item.service.notExistUserId"), id);
-            log.info("Пользователь с id {} не найден.", id);
+            log.warn("Пользователь с id {} не найден.", id);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
     }

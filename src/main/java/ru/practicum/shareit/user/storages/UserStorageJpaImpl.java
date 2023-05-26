@@ -7,7 +7,7 @@ import ru.practicum.shareit.user.storages.dao.UserStorage;
 
 import java.util.List;
 
-@Repository(value = "userJpa")
+@Repository
 public class UserStorageJpaImpl implements UserStorage {
 
     @Autowired
