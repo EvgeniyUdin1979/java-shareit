@@ -36,7 +36,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto findById(@PathVariable @Positive(message = "{user.controller.idNotPositive}") long id) {
+    public UserDto getUserById(@PathVariable @Positive(message = "{user.controller.idNotPositive}") long id) {
         UserDto user = service.findById(id);
         log.info("Получен пользователь с id {}.", id);
         return user;
@@ -50,7 +50,7 @@ public class UserController {
 
     @PostMapping
     @Validated(value = Create.class)
-    public UserDto create(@Validated(value = Create.class) @RequestBody UserDto userDto) {
+    public UserDto addUser(@Validated(value = Create.class) @RequestBody UserDto userDto) {
         User user = MappingUser.mapToUser(userDto);
         UserDto createUser = service.create(user);
         log.info("Создан пользователь {}.", createUser);
@@ -58,8 +58,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto update(@Validated(value = Update.class) @RequestBody UserDto userDto,
-                          @PathVariable @Positive(message = "{user.controller.idNotPositive}") long id) {
+    public UserDto updateUser(@Validated(value = Update.class) @RequestBody UserDto userDto,
+                              @PathVariable @Positive(message = "{user.controller.idNotPositive}") long id) {
         userDto.setId(id);
         User user = MappingUser.mapToUser(userDto);
         UserDto updateUser = service.update(user);

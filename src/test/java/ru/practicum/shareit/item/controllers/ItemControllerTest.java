@@ -24,8 +24,8 @@ class ItemControllerTest {
 
     @AfterEach
     void reset() throws Exception {
-        mockMvc.perform(delete(userURL + "/reset"));
         mockMvc.perform(delete(itemURL + "/reset"));
+        mockMvc.perform(delete(userURL + "/reset"));
     }
 
     @ParameterizedTest
@@ -98,6 +98,8 @@ class ItemControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         mockMvc.perform(get(itemURL + url)
+                        .header("X-Sharer-User-Id", "1")
+
                 )
                 .andDo(print())
                 .andExpectAll(
@@ -123,6 +125,8 @@ class ItemControllerTest {
                 .contentType(MediaType.APPLICATION_JSON));
 
         mockMvc.perform(get(itemURL + url)
+                        .header("X-Sharer-User-Id", "1")
+
                 )
                 .andDo(print())
                 .andExpectAll(
@@ -261,5 +265,4 @@ class ItemControllerTest {
                         jsonPath("$.message").value(expectedResponse)
                 );
     }
-
 }

@@ -15,7 +15,6 @@ import java.util.Locale;
 
 @Configuration
 @ComponentScan(basePackageClasses = AppConfig.class)
-//@PropertySource(value = "classpath:ValidationMessages.properties", encoding = "UTF-8")
 public class AppConfig implements WebMvcConfigurer {
 
     @Bean("messageSource")
@@ -30,7 +29,7 @@ public class AppConfig implements WebMvcConfigurer {
     @Bean
     public LocaleResolver localeResolver() {
         SessionLocaleResolver slr = new SessionLocaleResolver();
-        slr.setDefaultLocale(Locale.forLanguageTag("RU"));
+        slr.setDefaultLocale(Locale.forLanguageTag("ru"));
         return slr;
     }
 

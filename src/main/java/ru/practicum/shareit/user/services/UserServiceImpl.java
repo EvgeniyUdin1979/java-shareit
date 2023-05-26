@@ -30,6 +30,7 @@ public class UserServiceImpl implements UserService {
         this.messenger = messenger;
     }
 
+    @Override
     public List<UserDto> findAll() {
         return userStorage.findAll().stream().map(MappingUser::mapToDto).collect(Collectors.toList());
     }
@@ -37,19 +38,19 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto findById(long userId) {
         isExistsId(userId);
-        return mapToDto(userStorage.findById(userId));
+        return mapToDto(userStorage.findUserById(userId));
     }
 
     @Override
     public UserDto create(User user) {
-        isExistsEmail(user.getEmail());
+//        isExistsEmail(user.getEmail());
         return mapToDto(userStorage.add(user));
     }
 
     @Override
     public UserDto update(User user) {
         isExistsId(user.getId());
-        User userOld = userStorage.findById(user.getId());
+        User userOld = userStorage.findUserById(user.getId());
         if (user.getEmail() != null && !user.getEmail().equals(userOld.getEmail())) {
             isExistsEmail(user.getEmail());
         }
@@ -71,15 +72,15 @@ public class UserServiceImpl implements UserService {
     private void isExistsId(long userId) {
         if (!userStorage.existsId(userId)) {
             String message = String.format(messenger.getMessage("user.service.notFindUserById"), userId);
-            log.info(String.format("Пользователь с id %d не найден.",userId));
+            log.warn(String.format("Пользователь с id %d не найден.",userId));
             throw new UserRequestException(message, HttpStatus.NOT_FOUND);
         }
     }
 
     private void isExistsEmail(String email) {
         if (userStorage.existsEmail(email)) {
-            String message = String.format(messenger.getMessage("user.service.existsEmail"), email);
-            log.info(String.format("Пользователь с email %s уже существует.",email));
+            String message = String.format(messenger.getMessage("service.existsEmail"), email);
+            log.warn(String.format("Пользователь с email %s уже существует.",email));
             throw new UserRequestException(message, HttpStatus.CONFLICT);
         }
     }

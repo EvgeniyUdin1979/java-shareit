@@ -1,6 +1,7 @@
 package ru.practicum.shareit.advice;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -34,12 +35,15 @@ public class CustomAdvice {
             builder.append(errorMessage);
         }
         String message = builder.toString().trim();
-        log.info(message);
+        log.warn(message);
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(CustomRequestException.class)
-    public ResponseEntity<Response> handleUserException(CustomRequestException re) {
+    public ResponseEntity<?> handleUserException(CustomRequestException re) {
+        if (re.getMessage().startsWith("Не верный параметр запроса state")) {
+            return new ResponseEntity<>(new Error("Unknown state: UNSUPPORTED_STATUS"), HttpStatus.BAD_REQUEST);
+        }
         return getResponse(re.getStatus(), re.getMessage());
     }
 
@@ -51,22 +55,28 @@ public class CustomAdvice {
             builder.append(errorMessage);
         }
         String message = builder.toString().trim();
-        log.info(message);
+        log.warn(message);
         return getResponse(HttpStatus.BAD_REQUEST, message);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Response> handleException(DataIntegrityViolationException ex) {
+        String message = messenger.getMessage("service.existsEmail");
+        return getResponse(HttpStatus.CONFLICT, message);
     }
 
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Response> typeMismatchException(MethodArgumentTypeMismatchException ex) {
         String message = messenger.getMessage("advice.typeMismatchException");
-        log.info("Параметр id не является числом. {}", ex.getName());
+        log.warn("Параметр id не является числом. {}", ex.getName());
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 
     @ExceptionHandler(MissingRequestHeaderException.class)
     private ResponseEntity<Response> typeMismatchException(MissingRequestHeaderException ex) {
         String message = messenger.getMessage("advice.missingRequestHeader");
-        log.info("Отсутствует указание пользователя для данного запроса.{}", ex.getHeaderName());
+        log.warn("Отсутствует указание пользователя для данного запроса.{}", ex.getHeaderName());
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 

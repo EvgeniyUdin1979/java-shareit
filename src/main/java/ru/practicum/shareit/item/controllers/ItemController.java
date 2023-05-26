@@ -4,13 +4,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.item.dto.ItemDto;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.services.ItemService;
-import ru.practicum.shareit.item.util.MappingItem;
 import ru.practicum.shareit.validate.Create;
 import ru.practicum.shareit.validate.Update;
 
+import javax.validation.Valid;
 import javax.validation.constraints.Positive;
 import java.util.List;
 
@@ -31,54 +30,64 @@ public class ItemController {
 
     @GetMapping
     @Validated
-    public List<ItemDto> findAllByUserId(@RequestHeader(value = "X-Sharer-User-Id")
-                                         @Positive(message = "{item.controller.userIdNotPositive}")
-                                         long userId) {
-        List<ItemDto> allItem = service.findAllByUserId(userId);
+    public List<ItemOutDtoForGet> findAllByUserId(@RequestHeader(value = "X-Sharer-User-Id")
+                                                  @Positive(message = "{item.controller.userIdNotPositive}")
+                                                  long userId) {
+        List<ItemOutDtoForGet> allItem = service.findAllByUserId(userId);
         log.info("Получены все предметы для пользователя с id {}.", userId);
         return allItem;
     }
 
-    @GetMapping("/{id}")
-    public ItemDto findById(@PathVariable
-                            @Positive(message = "{item.controller.itemIdNotPositive}") long id) {
-        ItemDto itemDto = service.findById(id);
-        log.info("Получен предмет {}", itemDto);
-        return itemDto;
+    @GetMapping("/{itemId}")
+    public ItemOutDtoForGet findById(@PathVariable
+                                     @Positive(message = "{item.controller.itemIdNotPositive}") long itemId,
+                                     @RequestHeader(value = "X-Sharer-User-Id")
+                                     @Positive(message = "{item.controller.userIdNotPositive}")
+                                     long userId) {
+        ItemOutDtoForGet itemOutDtoForGet = service.findById(itemId, userId);
+        log.info("Получен предмет {}", itemOutDtoForGet);
+        return itemOutDtoForGet;
+    }
+
+    @PostMapping("/{itemId}/comment")
+    public CommentOutDto addComment(@Valid @RequestBody CommentInDto commentInDto,
+                                    @PathVariable
+                                    @Positive(message = "{item.controller.itemIdNotPositive}") long itemId,
+                                    @RequestHeader(value = "X-Sharer-User-Id")
+                                    @Positive(message = "{item.controller.userIdNotPositive}")
+                                    long userId) {
+        CommentOutDto result = service.addComment(userId, itemId, commentInDto);
+        log.info("Создан комментарий {}", result);
+        return result;
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam String text) {
-        List<ItemDto> items = service.search(text);
+    public List<ItemOutDto> search(@RequestParam String text) {
+        List<ItemOutDto> items = service.search(text);
         log.info("Получен список предметов по поиску: {}", text);
         return items;
     }
 
     @PostMapping
-    public ItemDto create(@Validated(value = Create.class)
-                          @RequestBody ItemDto itemDto,
-                          @RequestHeader(value = "X-Sharer-User-Id")
-                          @Positive(message = "{item.controller.userIdNotPositive}")
-                          long userId) {
-        Item item = MappingItem.mapToItem(itemDto);
-        item.setOwnerId(userId);
-        ItemDto createItem = service.create(item);
+    public ItemOutDto createItem(@Validated(value = Create.class)
+                                 @RequestBody ItemInDto itemInDto,
+                                 @RequestHeader(value = "X-Sharer-User-Id")
+                                 @Positive(message = "{item.controller.userIdNotPositive}")
+                                 long userId) {
+        ItemOutDto createItem = service.create(itemInDto, userId);
         log.info("Добавлен предмет в базу: {}", createItem);
         return createItem;
     }
 
-    @PatchMapping("/{id}")
-    public ItemDto update(@Validated(value = Update.class)
-                          @RequestBody ItemDto itemDto,
-                          @RequestHeader(value = "X-Sharer-User-Id")
-                          @Positive(message = "{item.controller.userIdNotPositive}")
-                          long userId,
-                          @PathVariable
-                          @Positive(message = "{item.controller.itemIdNotPositive}") long id) {
-        itemDto.setId(id);
-        Item item = MappingItem.mapToItem(itemDto);
-        item.setOwnerId(userId);
-        ItemDto updateItem = service.update(item);
+    @PatchMapping("/{itemId}")
+    public ItemOutDto updateItem(@Validated(value = Update.class)
+                                 @RequestBody ItemInDto itemInDto,
+                                 @RequestHeader(value = "X-Sharer-User-Id")
+                                 @Positive(message = "{item.controller.userIdNotPositive}")
+                                 long userId,
+                                 @PathVariable
+                                 @Positive(message = "{item.controller.itemIdNotPositive}") long itemId) {
+        ItemOutDto updateItem = service.update(itemInDto, itemId, userId);
         log.info("Обновлен предмет: {}", updateItem);
         return updateItem;
     }
