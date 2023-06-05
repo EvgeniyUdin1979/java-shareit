@@ -83,19 +83,19 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<BookingOutDto> findBookingsForBooker(long userId, Optional<String> stateIn) {
+    public List<BookingOutDto> findBookingsForBooker(long userId, Optional<String> stateIn, int from, int size) {
         isExistsUserId(userId);
         State state = getState(stateIn);
-        return bookingStorage.findAllBookingsForBookerOrOwner(true, userId, state)
+        return bookingStorage.findAllBookingsForBookerOrOwner(true, userId, state, from, size)
                 .stream().map(BookingMapping::mapToDto).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public List<BookingOutDto> findBookingsForOwner(long userId, Optional<String> stateIn) {
+    public List<BookingOutDto> findBookingsForOwner(long userId, Optional<String> stateIn, int from, int size) {
         isExistsUserId(userId);
         State state = getState(stateIn);
-        return bookingStorage.findAllBookingsForBookerOrOwner(false, userId, state)
+        return bookingStorage.findAllBookingsForBookerOrOwner(false, userId, state, from, size)
                 .stream().map(BookingMapping::mapToDto).collect(Collectors.toList());
     }
 

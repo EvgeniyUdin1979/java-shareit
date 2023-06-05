@@ -10,7 +10,8 @@ public interface BookingStorageJpaRepository extends JpaRepository<Booking, Long
 
     @Modifying
     @Transactional
-    @Query(value = "DELETE FROM bookings;ALTER TABLE bookings ALTER COLUMN id RESTART WITH 1;", nativeQuery = true)
+    @Query(value = "DELETE FROM requests;ALTER TABLE requests ALTER COLUMN id RESTART WITH 1;" +
+            "DELETE FROM bookings;ALTER TABLE bookings ALTER COLUMN id RESTART WITH 1;", nativeQuery = true)
     void clearDb();
 
 }

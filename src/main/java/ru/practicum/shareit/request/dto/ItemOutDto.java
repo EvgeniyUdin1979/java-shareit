@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.dto;
+package ru.practicum.shareit.request.dto;
 
 import lombok.Builder;
 import lombok.Data;
@@ -15,5 +15,6 @@ public class ItemOutDto {
 
     private Boolean available;
 
-    private long requestId;
+    private Long requestId;
+
 }

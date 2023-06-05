@@ -10,7 +10,7 @@ public interface BookingStorage {
 
     Booking findBookingById(long bookingId);
 
-    List<Booking> findAllBookingsForBookerOrOwner(boolean isBooker, long bookerId, State state);
+    List<Booking> findAllBookingsForBookerOrOwner(boolean isBooker, long bookerId, State state, int from, int size);
 
     boolean existsId(long bookingId);
 

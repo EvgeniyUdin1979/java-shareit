@@ -35,7 +35,7 @@ public class BookingStorageJpaImpl implements BookingStorage {
     }
 
     @Override
-    public List<Booking> findAllBookingsForBookerOrOwner(boolean isBooker, long userId, State state) {
+    public List<Booking> findAllBookingsForBookerOrOwner(boolean isBooker, long userId, State state, int from, int size) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         QBooking booking = QBooking.booking;
         DateExpression<LocalDateTime> date = Expressions.asDate(LocalDateTime.now());
@@ -50,6 +50,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                 return queryFactory.selectFrom(booking)
                         .where(bookerOrOwner)
                         .orderBy(booking.startDate.desc())
+                        .limit(size)
+                        .offset(from)
                         .fetch();
             }
             case WAITING: {
@@ -57,6 +59,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(booking.status.eq(Status.WAITING))
                         .orderBy(booking.startDate.desc())
+                        .limit(size)
+                        .offset(from)
                         .fetch();
             }
             case REJECTED: {
@@ -64,6 +68,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(booking.status.eq(Status.REJECTED))
                         .orderBy(booking.startDate.desc())
+                        .limit(size)
+                        .offset(from)
                         .fetch();
             }
             case CURRENT: {
@@ -71,6 +77,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(date.between(booking.startDate, booking.endDate))
                         .orderBy(booking.startDate.desc())
+                        .limit(size)
+                        .offset(from)
                         .fetch();
             }
             case PAST: {
@@ -78,6 +86,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(booking.endDate.before(LocalDateTime.now()))
                         .orderBy(booking.startDate.desc())
+                        .limit(size)
+                        .offset(from)
                         .fetch();
             }
             case FUTURE: {
@@ -85,6 +95,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(booking.startDate.after(LocalDateTime.now()))
                         .orderBy(booking.startDate.desc())
+                        .limit(size)
+                        .offset(from)
                         .fetch();
             }
         }

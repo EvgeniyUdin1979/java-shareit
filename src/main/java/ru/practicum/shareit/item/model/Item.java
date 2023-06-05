@@ -39,6 +39,9 @@ public class Item {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
     private Set<Comment> comments;
 
+    @Column(name = "request_Id")
+    private Long requestId;
+
 
     @Override
     public boolean equals(Object o) {
@@ -54,7 +57,4 @@ public class Item {
     }
 
 
-    //    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "request_id", nullable = false)
-//    private ItemRequest request;
 }

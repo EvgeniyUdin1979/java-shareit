@@ -10,6 +10,7 @@ import ru.practicum.shareit.booking.service.BookingService;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,8 +31,12 @@ public class BookingController {
     public List<BookingOutDto> getAllBooking(@RequestHeader(value = "X-Sharer-User-Id")
                                              @Positive(message = "{booking.controller.userIdNotPositive}")
                                              long userId,
-                                             @RequestParam Optional<String> state) {
-        List<BookingOutDto> result = service.findBookingsForBooker(userId, state);
+                                             @RequestParam Optional<String> state,
+                                             @PositiveOrZero(message = "{itemRequest.controller.fromNotPositiveOrZero}")
+                                             @RequestParam(name = "from", defaultValue = "0") int from,
+                                             @Positive(message = "{itemRequest.controller.sizeNotPositive}")
+                                             @RequestParam(name = "size", defaultValue = "10") int size) {
+        List<BookingOutDto> result = service.findBookingsForBooker(userId, state, from, size);
         log.info("Получены все бронирования");
         return result;
     }
@@ -40,8 +45,12 @@ public class BookingController {
     public List<BookingOutDto> getAllBookingForOwner(@RequestHeader(value = "X-Sharer-User-Id")
                                                      @Positive(message = "{booking.controller.userIdNotPositive}")
                                                      long userId,
-                                                     @RequestParam Optional<String> state) {
-        List<BookingOutDto> result = service.findBookingsForOwner(userId, state);
+                                                     @RequestParam Optional<String> state,
+                                                     @PositiveOrZero(message = "{itemRequest.controller.fromNotPositiveOrZero}")
+                                                     @RequestParam(name = "from", defaultValue = "0") int from,
+                                                     @Positive(message = "{itemRequest.controller.sizeNotPositive}")
+                                                     @RequestParam(name = "size", defaultValue = "10") int size) {
+        List<BookingOutDto> result = service.findBookingsForOwner(userId, state, from, size);
 
         log.info("Получены все бронирования");
         return result;

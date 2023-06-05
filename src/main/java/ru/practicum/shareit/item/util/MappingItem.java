@@ -15,16 +15,21 @@ public class MappingItem {
                 .name(itemInDto.getName())
                 .description(itemInDto.getDescription())
                 .available(itemInDto.getAvailable())
+                .requestId(itemInDto.getRequestId())
                 .build();
     }
 
     public static ItemOutDto mapToDto(Item item) {
-        return ItemOutDto.builder()
+        ItemOutDto dto = ItemOutDto.builder()
                 .id(item.getId())
                 .name(item.getName())
                 .description(item.getDescription())
                 .available(item.getAvailable())
                 .build();
+        if (item.getRequestId() != null) {
+            dto.setRequestId(item.getRequestId());
+        }
+        return dto;
     }
 
     public static ItemOutDtoForGet mapToDtoForGet(Item item, Booking lastBooking, Booking nextBooking) {
@@ -57,6 +62,7 @@ public class MappingItem {
                 .id(old.getId())
                 .owner(old.getOwner())
                 .comments(old.getComments())
+                .requestId(newestDto.getRequestId())
                 .build();
         if (newestDto.getName() != null) {
             newest.setName(newestDto.getName());
