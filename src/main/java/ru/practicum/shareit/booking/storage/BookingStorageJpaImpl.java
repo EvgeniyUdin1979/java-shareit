@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.QBooking;
-import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
 import ru.practicum.shareit.booking.storage.dao.BookingStorage;
 
@@ -35,23 +34,23 @@ public class BookingStorageJpaImpl implements BookingStorage {
     }
 
     @Override
-    public List<Booking> findAllBookingsForBookerOrOwner(boolean isBooker, long userId, State state, int from, int size) {
+    public List<Booking> findAllBookingsForBookerOrOwner(ParamsFindAll params) {
         JPAQueryFactory queryFactory = new JPAQueryFactory(em);
         QBooking booking = QBooking.booking;
         DateExpression<LocalDateTime> date = Expressions.asDate(LocalDateTime.now());
         BooleanExpression bookerOrOwner;
-        if (isBooker) {
-            bookerOrOwner = booking.booker.id.eq(userId);
+        if (params.isBooker()) {
+            bookerOrOwner = booking.booker.id.eq(params.getUserId());
         } else {
-            bookerOrOwner = booking.item.owner.id.eq(userId);
+            bookerOrOwner = booking.item.owner.id.eq(params.getUserId());
         }
-        switch (state) {
+        switch (params.getState()) {
             case ALL: {
                 return queryFactory.selectFrom(booking)
                         .where(bookerOrOwner)
                         .orderBy(booking.startDate.desc())
-                        .limit(size)
-                        .offset(from)
+                        .limit(params.getSize())
+                        .offset(params.getFrom())
                         .fetch();
             }
             case WAITING: {
@@ -59,8 +58,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(booking.status.eq(Status.WAITING))
                         .orderBy(booking.startDate.desc())
-                        .limit(size)
-                        .offset(from)
+                        .limit(params.getSize())
+                        .offset(params.getFrom())
                         .fetch();
             }
             case REJECTED: {
@@ -68,8 +67,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(booking.status.eq(Status.REJECTED))
                         .orderBy(booking.startDate.desc())
-                        .limit(size)
-                        .offset(from)
+                        .limit(params.getSize())
+                        .offset(params.getFrom())
                         .fetch();
             }
             case CURRENT: {
@@ -77,8 +76,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(date.between(booking.startDate, booking.endDate))
                         .orderBy(booking.startDate.desc())
-                        .limit(size)
-                        .offset(from)
+                        .limit(params.getSize())
+                        .offset(params.getFrom())
                         .fetch();
             }
             case PAST: {
@@ -86,8 +85,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(booking.endDate.before(LocalDateTime.now()))
                         .orderBy(booking.startDate.desc())
-                        .limit(size)
-                        .offset(from)
+                        .limit(params.getSize())
+                        .offset(params.getFrom())
                         .fetch();
             }
             case FUTURE: {
@@ -95,8 +94,8 @@ public class BookingStorageJpaImpl implements BookingStorage {
                         .where(bookerOrOwner)
                         .where(booking.startDate.after(LocalDateTime.now()))
                         .orderBy(booking.startDate.desc())
-                        .limit(size)
-                        .offset(from)
+                        .limit(params.getSize())
+                        .offset(params.getFrom())
                         .fetch();
             }
         }

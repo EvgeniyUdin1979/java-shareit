@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.booking.storage.ParamsFindAll;
 import ru.practicum.shareit.booking.storage.dao.BookingStorage;
 import ru.practicum.shareit.config.CustomLocaleMessenger;
 import ru.practicum.shareit.exceptions.ItemRequestException;
@@ -110,7 +111,14 @@ public class ItemServiceImpl implements ItemService {
     public CommentOutDto addComment(long authorId, long itemId, CommentInDto inDto) {
         userStorage.existsId(authorId);
         itemStorage.existsId(itemId);
-        List<Booking> allPastBookings = bookingStorage.findAllBookingsForBookerOrOwner(true, authorId, State.PAST, 0, Integer.MAX_VALUE);
+        ParamsFindAll params = ParamsFindAll.builder()
+                .isBooker(true)
+                .userId(authorId)
+                .state(State.PAST)
+                .from(0)
+                .size(Integer.MAX_VALUE)
+                .build();
+        List<Booking> allPastBookings = bookingStorage.findAllBookingsForBookerOrOwner(params);
         if (allPastBookings.size() == 0 || allPastBookings.stream().noneMatch(b -> b.getStatus() == Status.APPROVED)) {
             String message = String.format(messenger.getMessage("item.service.notBookingForItem"), authorId, itemId);
             log.warn("У пользователя с id: {} нет подтвержденных завершенных бронирований на предмет с id: {}", authorId, itemId);

@@ -11,7 +11,6 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.practicum.shareit.advice.CustomAdvice;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.srorages.dao.ItemStorage;
 import ru.practicum.shareit.request.model.ItemRequest;
 import ru.practicum.shareit.request.services.ItemRequestServiceImpl;
 import ru.practicum.shareit.request.storages.dao.ItemRequestStorage;
@@ -19,7 +18,7 @@ import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storages.dao.UserStorage;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +31,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest({ItemRequestController.class, ItemRequestServiceImpl.class, CustomAdvice.class})
 @ExtendWith(SpringExtension.class)
 class ItemRequestControllerTest {
+    String currentTestTime = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss"));
+
 
     private final String itemRequestURL = "http://localhost:8080/requests";
 
@@ -41,9 +42,6 @@ class ItemRequestControllerTest {
 
     @MockBean
     private UserStorage userStorage;
-
-    @MockBean
-    private ItemStorage itemStorage;
 
     @Autowired
     private MockMvc mockMvc;
@@ -61,7 +59,7 @@ class ItemRequestControllerTest {
                                 .build());
         Mockito.when(requestStorage.create(any(ItemRequest.class))).thenReturn(
                 ItemRequest.builder()
-                        .created(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+                        .created(LocalDateTime.parse(currentTestTime))
                         .id(1)
                         .description("Хотел бы воспользоваться щёткой для обуви")
                         .requestor(User.builder()
@@ -82,7 +80,7 @@ class ItemRequestControllerTest {
                         status().isOk(),
                         jsonPath("$.id").value(1),
                         jsonPath("$.description").value("Хотел бы воспользоваться щёткой для обуви"),
-                        jsonPath("$.created").value(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).toString()),
+                        jsonPath("$.created").value(currentTestTime),
                         jsonPath("$.items.length()").value(0)
                 );
 
@@ -92,7 +90,7 @@ class ItemRequestControllerTest {
     void getAllByRequestorTest() throws Exception {
         Mockito.when(userStorage.existsId(1)).thenReturn(true);
         Mockito.when(requestStorage.findAllByRequestorId(1)).thenReturn(List.of(ItemRequest.builder()
-                .created(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+                .created(LocalDateTime.parse(currentTestTime))
                 .id(1)
                 .description("Хотел бы воспользоваться щёткой для обуви")
                 .requestor(User.builder()
@@ -108,7 +106,7 @@ class ItemRequestControllerTest {
                         jsonPath("$.length()").value(1),
                         jsonPath("$[0].id").value(1),
                         jsonPath("$[0].description").value("Хотел бы воспользоваться щёткой для обуви"),
-                        jsonPath("$[0].created").value(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).toString()),
+                        jsonPath("$[0].created").value(currentTestTime),
                         jsonPath("$[0].items.length()").value(0));
     }
 
@@ -133,7 +131,7 @@ class ItemRequestControllerTest {
                 .thenAnswer(i -> {
                     if ((Long) i.getArgument(2) != user1.getId()) {
                         return List.of(ItemRequest.builder()
-                                .created(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+                                .created(LocalDateTime.parse(currentTestTime))
                                 .id(1)
                                 .description("Хотел бы воспользоваться щёткой для обуви")
                                 .requestor(user1)
@@ -156,7 +154,7 @@ class ItemRequestControllerTest {
                         jsonPath("$.length()").value(1),
                         jsonPath("$[0].id").value(1),
                         jsonPath("$[0].description").value("Хотел бы воспользоваться щёткой для обуви"),
-                        jsonPath("$[0].created").value(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).toString()),
+                        jsonPath("$[0].created").value(currentTestTime),
                         jsonPath("$[0].items.length()").value(1),
                         jsonPath("$[0].items[0].name").value("предмет1"));
     }
@@ -180,7 +178,7 @@ class ItemRequestControllerTest {
         Mockito.when(userStorage.existsId(anyLong())).thenReturn(true);
         Mockito.when(requestStorage.isExists(anyLong())).thenReturn(true);
         Mockito.when(requestStorage.findById(anyLong())).thenReturn(ItemRequest.builder()
-                .created(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS))
+                .created(LocalDateTime.parse(currentTestTime))
                 .id(1)
                 .description("Хотел бы воспользоваться щёткой для обуви")
                 .requestor(user1)
@@ -196,7 +194,7 @@ class ItemRequestControllerTest {
                         status().isOk(),
                         jsonPath("$.id").value(1),
                         jsonPath("$.description").value("Хотел бы воспользоваться щёткой для обуви"),
-                        jsonPath("$.created").value(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS).toString()),
+                        jsonPath("$.created").value(currentTestTime),
                         jsonPath("$.items.length()").value(1),
                         jsonPath("$.items[0].name").value("предмет1"));
 

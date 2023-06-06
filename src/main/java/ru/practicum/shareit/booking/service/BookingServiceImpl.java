@@ -5,11 +5,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import ru.practicum.shareit.booking.controllers.ParamsGetAll;
 import ru.practicum.shareit.booking.dto.BookingInDto;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.booking.storage.ParamsFindAll;
 import ru.practicum.shareit.booking.storage.dao.BookingStorage;
 import ru.practicum.shareit.booking.util.BookingMapping;
 import ru.practicum.shareit.config.CustomLocaleMessenger;
@@ -83,19 +85,33 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public List<BookingOutDto> findBookingsForBooker(long userId, Optional<String> stateIn, int from, int size) {
-        isExistsUserId(userId);
-        State state = getState(stateIn);
-        return bookingStorage.findAllBookingsForBookerOrOwner(true, userId, state, from, size)
+    public List<BookingOutDto> findBookingsForBooker(ParamsGetAll inParams) {
+        isExistsUserId(inParams.getUserId());
+        State state = getState(inParams.getState());
+        ParamsFindAll outParams = ParamsFindAll.builder()
+                .isBooker(true)
+                .userId(inParams.getUserId())
+                .state(state)
+                .from(inParams.getFrom())
+                .size(inParams.getSize())
+                .build();
+        return bookingStorage.findAllBookingsForBookerOrOwner(outParams)
                 .stream().map(BookingMapping::mapToDto).collect(Collectors.toList());
     }
 
     @Override
     @Transactional
-    public List<BookingOutDto> findBookingsForOwner(long userId, Optional<String> stateIn, int from, int size) {
-        isExistsUserId(userId);
-        State state = getState(stateIn);
-        return bookingStorage.findAllBookingsForBookerOrOwner(false, userId, state, from, size)
+    public List<BookingOutDto> findBookingsForOwner(ParamsGetAll inParams) {
+        isExistsUserId(inParams.getUserId());
+        State state = getState(inParams.getState());
+        ParamsFindAll params = ParamsFindAll.builder()
+                .isBooker(false)
+                .userId(inParams.getUserId())
+                .state(state)
+                .from(inParams.getFrom())
+                .size(inParams.getSize())
+                .build();
+        return bookingStorage.findAllBookingsForBookerOrOwner(params)
                 .stream().map(BookingMapping::mapToDto).collect(Collectors.toList());
     }
 

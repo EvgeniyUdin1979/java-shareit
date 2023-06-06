@@ -4,7 +4,6 @@ import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.Objects;
 import java.util.Set;
 
 @Builder
@@ -15,6 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 public class Item {
 
     @Id
@@ -41,20 +41,4 @@ public class Item {
 
     @Column(name = "request_Id")
     private Long requestId;
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        return id == item.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-
 }

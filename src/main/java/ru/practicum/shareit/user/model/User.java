@@ -6,7 +6,6 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.request.model.ItemRequest;
 
 import javax.persistence.*;
-import java.util.Objects;
 import java.util.Set;
 
 @Builder
@@ -17,6 +16,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,17 +37,4 @@ public class User {
 
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "requestor")
     private Set<ItemRequest> requests;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        User user = (User) o;
-        return id == user.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

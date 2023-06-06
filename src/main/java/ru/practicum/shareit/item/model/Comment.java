@@ -5,7 +5,6 @@ import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "comments")
@@ -15,6 +14,7 @@ import java.util.Objects;
 @Setter
 @ToString
 @Builder
+@EqualsAndHashCode
 public class Comment {
 
     @Id
@@ -35,17 +35,4 @@ public class Comment {
 
     @Column(nullable = false)
     private LocalDateTime created;
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Comment comment = (Comment) o;
-        return id == comment.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

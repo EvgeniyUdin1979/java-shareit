@@ -36,7 +36,13 @@ public class BookingController {
                                              @RequestParam(name = "from", defaultValue = "0") int from,
                                              @Positive(message = "{itemRequest.controller.sizeNotPositive}")
                                              @RequestParam(name = "size", defaultValue = "10") int size) {
-        List<BookingOutDto> result = service.findBookingsForBooker(userId, state, from, size);
+        ParamsGetAll params = ParamsGetAll.builder()
+                .userId(userId)
+                .state(state)
+                .from(from)
+                .size(size)
+                .build();
+        List<BookingOutDto> result = service.findBookingsForBooker(params);
         log.info("Получены все бронирования");
         return result;
     }
@@ -50,7 +56,13 @@ public class BookingController {
                                                      @RequestParam(name = "from", defaultValue = "0") int from,
                                                      @Positive(message = "{itemRequest.controller.sizeNotPositive}")
                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
-        List<BookingOutDto> result = service.findBookingsForOwner(userId, state, from, size);
+        ParamsGetAll params = ParamsGetAll.builder()
+                .userId(userId)
+                .state(state)
+                .from(from)
+                .size(size)
+                .build();
+        List<BookingOutDto> result = service.findBookingsForOwner(params);
 
         log.info("Получены все бронирования");
         return result;
