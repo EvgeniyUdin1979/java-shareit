@@ -4,7 +4,6 @@ import lombok.*;
 import ru.practicum.shareit.user.model.User;
 
 import javax.persistence.*;
-import java.util.Objects;
 import java.util.Set;
 
 @Builder
@@ -15,6 +14,7 @@ import java.util.Set;
 @Getter
 @Setter
 @ToString
+@EqualsAndHashCode
 public class Item {
 
     @Id
@@ -39,22 +39,6 @@ public class Item {
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "item")
     private Set<Comment> comments;
 
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Item item = (Item) o;
-        return id == item.id;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
-
-
-    //    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "request_id", nullable = false)
-//    private ItemRequest request;
+    @Column(name = "request_Id")
+    private Long requestId;
 }

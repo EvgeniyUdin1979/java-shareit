@@ -21,4 +21,6 @@ public class ItemInDto {
 
     @NotNull(groups = {Create.class}, message = "{item.dto.available.NotNull}")
     private Boolean available;
+
+    private Long requestId;
 }

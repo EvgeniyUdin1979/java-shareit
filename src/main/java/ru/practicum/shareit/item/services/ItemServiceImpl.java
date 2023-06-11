@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.practicum.shareit.booking.model.Booking;
 import ru.practicum.shareit.booking.model.State;
 import ru.practicum.shareit.booking.model.Status;
+import ru.practicum.shareit.booking.storage.ParamsFindAll;
 import ru.practicum.shareit.booking.storage.dao.BookingStorage;
 import ru.practicum.shareit.config.CustomLocaleMessenger;
 import ru.practicum.shareit.exceptions.ItemRequestException;
@@ -15,6 +16,7 @@ import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.srorages.dao.ItemStorage;
 import ru.practicum.shareit.item.util.MappingItem;
+import ru.practicum.shareit.request.storages.dao.ItemRequestStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storages.dao.UserStorage;
 
@@ -29,15 +31,17 @@ public class ItemServiceImpl implements ItemService {
     private final ItemStorage itemStorage;
     private final UserStorage userStorage;
     private final BookingStorage bookingStorage;
+    private final ItemRequestStorage requestStorage;
     private final CustomLocaleMessenger messenger;
 
     @Autowired
     public ItemServiceImpl(ItemStorage itemStorage,
                            UserStorage userStorage,
-                           BookingStorage bookingStorage, CustomLocaleMessenger messenger) {
+                           BookingStorage bookingStorage, ItemRequestStorage requestStorage, CustomLocaleMessenger messenger) {
         this.itemStorage = itemStorage;
         this.userStorage = userStorage;
         this.bookingStorage = bookingStorage;
+        this.requestStorage = requestStorage;
         this.messenger = messenger;
     }
 
@@ -107,7 +111,14 @@ public class ItemServiceImpl implements ItemService {
     public CommentOutDto addComment(long authorId, long itemId, CommentInDto inDto) {
         userStorage.existsId(authorId);
         itemStorage.existsId(itemId);
-        List<Booking> allPastBookings = bookingStorage.findAllBookingsForBookerOrOwner(true, authorId, State.PAST);
+        ParamsFindAll params = ParamsFindAll.builder()
+                .isBooker(true)
+                .userId(authorId)
+                .state(State.PAST)
+                .from(0)
+                .size(Integer.MAX_VALUE)
+                .build();
+        List<Booking> allPastBookings = bookingStorage.findAllBookingsForBookerOrOwner(params);
         if (allPastBookings.size() == 0 || allPastBookings.stream().noneMatch(b -> b.getStatus() == Status.APPROVED)) {
             String message = String.format(messenger.getMessage("item.service.notBookingForItem"), authorId, itemId);
             log.warn("У пользователя с id: {} нет подтвержденных завершенных бронирований на предмет с id: {}", authorId, itemId);
@@ -133,6 +144,14 @@ public class ItemServiceImpl implements ItemService {
         if (!userStorage.existsId(id)) {
             String message = String.format(messenger.getMessage("item.service.notExistUserId"), id);
             log.warn("Пользователь с id {} не найден.", id);
+            throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
+        }
+    }
+
+    private void isExistsItemRequest(long requestId) {
+        if (!requestStorage.isExists(requestId)) {
+            String message = String.format(messenger.getMessage("itemRequest.service.notExistId"), requestId);
+            log.warn("Запрос на бронирование с id: {} не найдено.", requestId);
             throw new ItemRequestException(message, HttpStatus.NOT_FOUND);
         }
     }
