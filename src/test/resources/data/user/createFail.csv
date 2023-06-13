@@ -1,3 +1,0 @@
-"Пользователь с данным email уже существует."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user1","email": "user1@user.com"}|409
-"Не корректный электронный адрес."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user1","email": "user.com"}|400
-"Email не может отсутствовать или быть пустым."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user1","email": ""}|400

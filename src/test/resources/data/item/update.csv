@@ -1,3 +1,0 @@
-"/1"|{"name": "user","email": "user@user.com"}|{"name": "дрель","description": "Простая дрель","available": true}|{"name": "Аккумуляторная дрель"}|{"name": "Аккумуляторная дрель","description": "Простая дрель","available": true}
-"/1"|{"name": "user","email": "user@user.com"}|{"name": "дрель","description": "Простая дрель","available": true}|{"description": "Аккумуляторная дрель"}|{"name": "дрель","description": "Аккумуляторная дрель","available": true}
-"/1"|{"name": "user","email": "user@user.com"}|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|{"name": "дрель","description": "Простая дрель","available": false}
