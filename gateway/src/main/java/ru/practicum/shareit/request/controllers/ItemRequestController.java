@@ -16,6 +16,8 @@ import javax.validation.constraints.PositiveOrZero;
 @RequestMapping(path = "/requests")
 @Validated
 public class ItemRequestController {
+    private final String headerUserId = "X-Sharer-User-Id";
+
     private final RequestClient client;
 
     @Autowired
@@ -26,7 +28,7 @@ public class ItemRequestController {
     @PostMapping
     public ResponseEntity<Object> add(@Valid
                                       @RequestBody ItemRequestInDto itemRequestInDto,
-                                      @RequestHeader(value = "X-Sharer-User-Id")
+                                      @RequestHeader(value = headerUserId)
                                       @Positive(message = "{item.controller.userIdNotPositive}")
                                       long userId) {
         return client.addRequest(userId, itemRequestInDto);
@@ -34,7 +36,7 @@ public class ItemRequestController {
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllByRequestor(@RequestHeader(value = "X-Sharer-User-Id")
+    public ResponseEntity<Object> getAllByRequestor(@RequestHeader(value = headerUserId)
                                                     @Positive(message = "{item.controller.userIdNotPositive}")
                                                     long userId) {
         return client.getAllByRequestor(userId);
@@ -45,8 +47,8 @@ public class ItemRequestController {
                                          @RequestParam(name = "from", defaultValue = "0") int from,
                                          @Positive(message = "{itemRequest.controller.sizeNotPositive}")
                                          @RequestParam(name = "size", defaultValue = "10") int size,
-                                         @RequestHeader(value = "X-Sharer-User-Id")
-                                         @Positive(message = "{item.controller.userIdNotPositive}")
+                                         @RequestHeader(value = headerUserId)
+                                             @Positive(message = "{item.controller.userIdNotPositive}")
                                          long userId) {
         return client.getAll(userId, from, size);
     }
@@ -54,7 +56,7 @@ public class ItemRequestController {
     @GetMapping("/{requestId}")
     public ResponseEntity<Object> getByRequest(@PathVariable
                                                @Positive(message = "{item.controller.itemIdNotPositive}") long requestId,
-                                               @RequestHeader(value = "X-Sharer-User-Id")
+                                               @RequestHeader(value = headerUserId)
                                                @Positive(message = "{item.controller.userIdNotPositive}")
                                                long userId) {
         return client.getByRequest(userId, requestId);

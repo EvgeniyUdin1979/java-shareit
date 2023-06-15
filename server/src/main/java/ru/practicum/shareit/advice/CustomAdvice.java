@@ -13,9 +13,8 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 import ru.practicum.shareit.config.CustomLocaleMessenger;
 import ru.practicum.shareit.exceptions.CustomRequestException;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -28,18 +27,6 @@ public class CustomAdvice {
         this.messenger = messenger;
     }
 
-    @ExceptionHandler(ConstraintViolationException.class)
-    public ResponseEntity<Response> handleBindException(ConstraintViolationException cve) {
-        List<String> errorMessages = cve.getConstraintViolations().stream().map(ConstraintViolation::getMessage).sorted().collect(Collectors.toList());
-        StringBuilder builder = new StringBuilder();
-        for (String errorMessage : errorMessages) {
-            builder.append(errorMessage);
-        }
-        String message = builder.toString().trim();
-        log.warn(message);
-        return getResponse(HttpStatus.BAD_REQUEST, message);
-    }
-
     @ExceptionHandler(CustomRequestException.class)
     public ResponseEntity<?> handleUserException(CustomRequestException re) {
         if (re.getMessage().startsWith("Не верный параметр запроса state")) {
@@ -50,7 +37,10 @@ public class CustomAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response> handleException(MethodArgumentNotValidException ex) {
-        List<String> errorMessages = ex.getAllErrors().stream().map(e -> e.getDefaultMessage()).sorted().collect(Collectors.toList());
+        List<String> errorMessages = ex.getAllErrors().stream()
+                .map(e -> e.getDefaultMessage())
+                .sorted()
+                .collect(Collectors.toList());
         StringBuilder builder = new StringBuilder();
         for (String errorMessage : errorMessages) {
             builder.append(errorMessage);
@@ -90,12 +80,7 @@ public class CustomAdvice {
 
     private ResponseEntity<Response> getResponse(HttpStatus httpStatus, String message) {
         Response response = new Response(message);
-        HttpStatus status;
-        if (httpStatus != null) {
-            status = httpStatus;
-        } else {
-            status = HttpStatus.BAD_REQUEST;
-        }
+        HttpStatus status = Objects.requireNonNullElse(httpStatus, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(response, status);
     }
 }

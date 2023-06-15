@@ -2,24 +2,20 @@ package ru.practicum.shareit.booking.controllers;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingInDto;
 import ru.practicum.shareit.booking.dto.BookingOutDto;
 import ru.practicum.shareit.booking.service.BookingService;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
-import javax.validation.constraints.PositiveOrZero;
 import java.util.List;
 import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/bookings")
-@Validated
 @Slf4j
 public class BookingController {
 
+    private final String headerUserId = "X-Sharer-User-Id";
     private final BookingService service;
 
     @Autowired
@@ -28,13 +24,10 @@ public class BookingController {
     }
 
     @GetMapping
-    public List<BookingOutDto> getAllBooking(@RequestHeader(value = "X-Sharer-User-Id")
-                                             @Positive(message = "{booking.controller.userIdNotPositive}")
+    public List<BookingOutDto> getAllBooking(@RequestHeader(value = headerUserId)
                                              long userId,
                                              @RequestParam Optional<String> state,
-                                             @PositiveOrZero(message = "{itemRequest.controller.fromNotPositiveOrZero}")
                                              @RequestParam(name = "from", defaultValue = "0") int from,
-                                             @Positive(message = "{itemRequest.controller.sizeNotPositive}")
                                              @RequestParam(name = "size", defaultValue = "10") int size) {
         ParamsGetAll params = ParamsGetAll.builder()
                 .userId(userId)
@@ -48,13 +41,10 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public List<BookingOutDto> getAllBookingForOwner(@RequestHeader(value = "X-Sharer-User-Id")
-                                                     @Positive(message = "{booking.controller.userIdNotPositive}")
+    public List<BookingOutDto> getAllBookingForOwner(@RequestHeader(value = headerUserId)
                                                      long userId,
                                                      @RequestParam Optional<String> state,
-                                                     @PositiveOrZero(message = "{itemRequest.controller.fromNotPositiveOrZero}")
                                                      @RequestParam(name = "from", defaultValue = "0") int from,
-                                                     @Positive(message = "{itemRequest.controller.sizeNotPositive}")
                                                      @RequestParam(name = "size", defaultValue = "10") int size) {
         ParamsGetAll params = ParamsGetAll.builder()
                 .userId(userId)
@@ -70,11 +60,9 @@ public class BookingController {
 
 
     @GetMapping("{bookingId}")
-    public BookingOutDto getBookingDto(@RequestHeader(value = "X-Sharer-User-Id")
-                                       @Positive(message = "{booking.controller.userIdNotPositive}")
+    public BookingOutDto getBookingDto(@RequestHeader(value = headerUserId)
                                        long userId,
                                        @PathVariable(value = "bookingId")
-                                       @Positive(message = "{booking.controller.bookingIdNotPositive}")
                                        long bookingId) {
         BookingOutDto result = service.findBookingById(userId, bookingId);
         log.info("Получено бронирование: {}", result);
@@ -82,10 +70,8 @@ public class BookingController {
     }
 
     @PostMapping
-    public BookingOutDto addBooking(@Valid
-                                    @RequestBody BookingInDto bookingInDto,
-                                    @RequestHeader(value = "X-Sharer-User-Id")
-                                    @Positive(message = "{booking.controller.userIdNotPositive}")
+    public BookingOutDto addBooking(@RequestBody BookingInDto bookingInDto,
+                                    @RequestHeader(value = headerUserId)
                                     long userId) {
         BookingOutDto result = service.create(bookingInDto, userId);
         log.info("Создано бронирование: {}", result);
@@ -93,11 +79,9 @@ public class BookingController {
     }
 
     @PatchMapping("/{bookingId}")
-    public BookingOutDto changeApproval(@RequestHeader(value = "X-Sharer-User-Id")
-                                        @Positive(message = "{booking.controller.userIdNotPositive}")
+    public BookingOutDto changeApproval(@RequestHeader(value = headerUserId)
                                         long userId,
                                         @PathVariable(value = "bookingId")
-                                        @Positive(message = "{booking.controller.bookingIdNotPositive}")
                                         long bookingId,
                                         @RequestParam(value = "approved") Optional<Boolean> approved) {
         BookingOutDto result = service.approval(userId, bookingId, approved);

@@ -15,6 +15,7 @@ import ru.practicum.shareit.exceptions.CustomRequestException;
 import javax.validation.ConstraintViolation;
 import javax.validation.ConstraintViolationException;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -37,7 +38,10 @@ public class CustomAdvice {
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<Response> handleBindException(ConstraintViolationException cve) {
-        List<String> errorMessages = cve.getConstraintViolations().stream().map(ConstraintViolation::getMessage).sorted().collect(Collectors.toList());
+        List<String> errorMessages = cve.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .sorted()
+                .collect(Collectors.toList());
         StringBuilder builder = new StringBuilder();
         for (String errorMessage : errorMessages) {
             builder.append(errorMessage);
@@ -49,7 +53,10 @@ public class CustomAdvice {
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Response> handleException(MethodArgumentNotValidException ex) {
-        List<String> errorMessages = ex.getAllErrors().stream().map(e -> e.getDefaultMessage()).sorted().collect(Collectors.toList());
+        List<String> errorMessages = ex.getAllErrors().stream()
+                .map(e -> e.getDefaultMessage())
+                .sorted()
+                .collect(Collectors.toList());
         StringBuilder builder = new StringBuilder();
         for (String errorMessage : errorMessages) {
             builder.append(errorMessage);
@@ -82,12 +89,7 @@ public class CustomAdvice {
 
     private ResponseEntity<Response> getResponse(HttpStatus httpStatus, String message) {
         Response response = new Response(message);
-        HttpStatus status;
-        if (httpStatus != null) {
-            status = httpStatus;
-        } else {
-            status = HttpStatus.BAD_REQUEST;
-        }
+        HttpStatus status = Objects.requireNonNullElse(httpStatus, HttpStatus.BAD_REQUEST);
         return new ResponseEntity<>(response, status);
     }
 }

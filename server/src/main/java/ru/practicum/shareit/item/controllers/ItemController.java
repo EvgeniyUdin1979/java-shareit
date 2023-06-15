@@ -6,19 +6,16 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.*;
 import ru.practicum.shareit.item.services.ItemService;
-import ru.practicum.shareit.validate.Create;
-import ru.practicum.shareit.validate.Update;
 
-import javax.validation.Valid;
-import javax.validation.constraints.Positive;
 import java.util.List;
 
 
 @Slf4j
 @RestController
-@Validated
 @RequestMapping("/items")
 public class ItemController {
+
+    private final String headerUserId = "X-Sharer-User-Id";
 
     private final ItemService service;
 
@@ -30,8 +27,7 @@ public class ItemController {
 
     @GetMapping
     @Validated
-    public List<ItemOutDtoForGet> findAllByUserId(@RequestHeader(value = "X-Sharer-User-Id")
-                                                  @Positive(message = "{item.controller.userIdNotPositive}")
+    public List<ItemOutDtoForGet> findAllByUserId(@RequestHeader(value = headerUserId)
                                                   long userId) {
         List<ItemOutDtoForGet> allItem = service.findAllByUserId(userId);
         log.info("Получены все предметы для пользователя с id {}.", userId);
@@ -40,9 +36,8 @@ public class ItemController {
 
     @GetMapping("/{itemId}")
     public ItemOutDtoForGet findById(@PathVariable
-                                     @Positive(message = "{item.controller.itemIdNotPositive}") long itemId,
-                                     @RequestHeader(value = "X-Sharer-User-Id")
-                                     @Positive(message = "{item.controller.userIdNotPositive}")
+                                     long itemId,
+                                     @RequestHeader(value = headerUserId)
                                      long userId) {
         ItemOutDtoForGet itemOutDtoForGet = service.findById(itemId, userId);
         log.info("Получен предмет {}", itemOutDtoForGet);
@@ -50,11 +45,10 @@ public class ItemController {
     }
 
     @PostMapping("/{itemId}/comment")
-    public CommentOutDto addComment(@Valid @RequestBody CommentInDto commentInDto,
+    public CommentOutDto addComment(@RequestBody CommentInDto commentInDto,
                                     @PathVariable
-                                    @Positive(message = "{item.controller.itemIdNotPositive}") long itemId,
-                                    @RequestHeader(value = "X-Sharer-User-Id")
-                                    @Positive(message = "{item.controller.userIdNotPositive}")
+                                    long itemId,
+                                    @RequestHeader(value = headerUserId)
                                     long userId) {
         CommentOutDto result = service.addComment(userId, itemId, commentInDto);
         log.info("Создан комментарий {}", result);
@@ -69,24 +63,20 @@ public class ItemController {
     }
 
     @PostMapping
-    public ItemOutDto createItem(@Validated(value = Create.class)
-                                 @RequestBody ItemInDto itemInDto,
-                                 @RequestHeader(value = "X-Sharer-User-Id")
-                                 @Positive(message = "{item.controller.userIdNotPositive}")
-                                 long userId) {
+    public ItemOutDto createItem(
+            @RequestBody ItemInDto itemInDto,
+            @RequestHeader(value = headerUserId)
+            long userId) {
         ItemOutDto createItem = service.create(itemInDto, userId);
         log.info("Добавлен предмет в базу: {}", createItem);
         return createItem;
     }
 
     @PatchMapping("/{itemId}")
-    public ItemOutDto updateItem(@Validated(value = Update.class)
-                                 @RequestBody ItemInDto itemInDto,
-                                 @RequestHeader(value = "X-Sharer-User-Id")
-                                 @Positive(message = "{item.controller.userIdNotPositive}")
+    public ItemOutDto updateItem(@RequestBody ItemInDto itemInDto,
+                                 @RequestHeader(value = headerUserId)
                                  long userId,
-                                 @PathVariable
-                                 @Positive(message = "{item.controller.itemIdNotPositive}") long itemId) {
+                                 @PathVariable long itemId) {
         ItemOutDto updateItem = service.update(itemInDto, itemId, userId);
         log.info("Обновлен предмет: {}", updateItem);
         return updateItem;

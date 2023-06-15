@@ -6,7 +6,6 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.BookingClient;
 import ru.practicum.shareit.booking.dto.BookingInDto;
-import ru.practicum.shareit.config.CustomLocaleMessenger;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
@@ -17,19 +16,18 @@ import java.util.Optional;
 @RequestMapping(path = "/bookings")
 @Validated
 public class BookingController {
+    private final String headerUserId = "X-Sharer-User-Id";
 
     private final BookingClient client;
 
-    private final CustomLocaleMessenger messenger;
 
     @Autowired
-    public BookingController(BookingClient client, CustomLocaleMessenger messenger) {
+    public BookingController(BookingClient client) {
         this.client = client;
-        this.messenger = messenger;
     }
 
     @GetMapping
-    public ResponseEntity<Object> getAllBooking(@RequestHeader(value = "X-Sharer-User-Id")
+    public ResponseEntity<Object> getAllBooking(@RequestHeader(value = headerUserId)
                                                 @Positive(message = "{booking.controller.userIdNotPositive}")
                                                 long userId,
                                                 @RequestParam Optional<String> state,
@@ -47,7 +45,7 @@ public class BookingController {
     }
 
     @GetMapping("/owner")
-    public ResponseEntity<Object> getAllBookingForOwner(@RequestHeader(value = "X-Sharer-User-Id")
+    public ResponseEntity<Object> getAllBookingForOwner(@RequestHeader(value = headerUserId)
                                                         @Positive(message = "{booking.controller.userIdNotPositive}")
                                                         long userId,
                                                         @RequestParam Optional<String> state,
@@ -66,7 +64,7 @@ public class BookingController {
 
 
     @GetMapping("{bookingId}")
-    public ResponseEntity<Object> getBookingDto(@RequestHeader(value = "X-Sharer-User-Id")
+    public ResponseEntity<Object> getBookingDto(@RequestHeader(value = headerUserId)
                                                 @Positive(message = "{booking.controller.userIdNotPositive}")
                                                 long userId,
                                                 @PathVariable(value = "bookingId")
@@ -78,14 +76,14 @@ public class BookingController {
     @PostMapping
     public ResponseEntity<Object> addBooking(@Valid
                                              @RequestBody BookingInDto bookingInDto,
-                                             @RequestHeader(value = "X-Sharer-User-Id")
+                                             @RequestHeader(value = headerUserId)
                                              @Positive(message = "{booking.controller.userIdNotPositive}")
                                              long userId) {
         return client.addBooking(userId, bookingInDto);
     }
 
     @PatchMapping("/{bookingId}")
-    public ResponseEntity<Object> changeApproval(@RequestHeader(value = "X-Sharer-User-Id")
+    public ResponseEntity<Object> changeApproval(@RequestHeader(value = headerUserId)
                                                  @Positive(message = "{booking.controller.userIdNotPositive}")
                                                  long userId,
                                                  @PathVariable(value = "bookingId")

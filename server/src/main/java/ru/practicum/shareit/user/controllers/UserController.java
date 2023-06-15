@@ -8,10 +8,7 @@ import ru.practicum.shareit.user.dto.UserDto;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.services.UserService;
 import ru.practicum.shareit.user.util.MappingUser;
-import ru.practicum.shareit.validate.Create;
-import ru.practicum.shareit.validate.Update;
 
-import javax.validation.constraints.Positive;
 import java.util.List;
 
 
@@ -36,21 +33,20 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public UserDto getUserById(@PathVariable @Positive(message = "{user.controller.idNotPositive}") long id) {
+    public UserDto getUserById(@PathVariable long id) {
         UserDto user = service.findById(id);
         log.info("Получен пользователь с id {}.", id);
         return user;
     }
 
     @DeleteMapping("/{id}")
-    public void deleteById(@PathVariable @Positive(message = "{user.controller.idNotPositive}") long id) {
+    public void deleteById(@PathVariable long id) {
         service.delete(id);
         log.info("Удален пользователь с id {}.", id);
     }
 
     @PostMapping
-    @Validated(value = Create.class)
-    public UserDto addUser(@Validated(value = Create.class) @RequestBody UserDto userDto) {
+    public UserDto addUser(@RequestBody UserDto userDto) {
         User user = MappingUser.mapToUser(userDto);
         UserDto createUser = service.create(user);
         log.info("Создан пользователь {}.", createUser);
@@ -58,8 +54,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public UserDto updateUser(@Validated(value = Update.class) @RequestBody UserDto userDto,
-                              @PathVariable @Positive(message = "{user.controller.idNotPositive}") long id) {
+    public UserDto updateUser(@RequestBody UserDto userDto,
+                              @PathVariable long id) {
         userDto.setId(id);
         User user = MappingUser.mapToUser(userDto);
         UserDto updateUser = service.update(user);

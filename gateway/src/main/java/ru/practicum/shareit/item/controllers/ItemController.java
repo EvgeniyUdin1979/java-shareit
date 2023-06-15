@@ -18,6 +18,7 @@ import javax.validation.constraints.Positive;
 @Validated
 @RequestMapping("/items")
 public class ItemController {
+    private final String headerUserId = "X-Sharer-User-Id";
 
     private final ItemClient client;
 
@@ -28,7 +29,7 @@ public class ItemController {
 
     @GetMapping
     @Validated
-    public ResponseEntity<Object> findAllByUserId(@RequestHeader(value = "X-Sharer-User-Id")
+    public ResponseEntity<Object> findAllByUserId(@RequestHeader(value = headerUserId)
                                                   @Positive(message = "{item.controller.userIdNotPositive}")
                                                   long userId) {
         return client.findAllByUserId(userId);
@@ -37,7 +38,7 @@ public class ItemController {
     @GetMapping("/{itemId}")
     public ResponseEntity<Object> findById(@PathVariable
                                            @Positive(message = "{item.controller.itemIdNotPositive}") long itemId,
-                                           @RequestHeader(value = "X-Sharer-User-Id")
+                                           @RequestHeader(value = headerUserId)
                                            @Positive(message = "{item.controller.userIdNotPositive}")
                                            long userId) {
         return client.findById(itemId, userId);
@@ -47,7 +48,7 @@ public class ItemController {
     public ResponseEntity<Object> addComment(@Valid @RequestBody CommentInDto commentInDto,
                                              @PathVariable
                                              @Positive(message = "{item.controller.itemIdNotPositive}") long itemId,
-                                             @RequestHeader(value = "X-Sharer-User-Id")
+                                             @RequestHeader(value = headerUserId)
                                              @Positive(message = "{item.controller.userIdNotPositive}")
                                              long userId) {
         return client.addComment(userId, itemId, commentInDto);
@@ -61,7 +62,7 @@ public class ItemController {
     @PostMapping
     public ResponseEntity<Object> createItem(@Validated(value = Create.class)
                                              @RequestBody ItemInDto itemInDto,
-                                             @RequestHeader(value = "X-Sharer-User-Id")
+                                             @RequestHeader(value = headerUserId)
                                              @Positive(message = "{item.controller.userIdNotPositive}")
                                              long userId) {
         return client.createItem(userId, itemInDto);
@@ -70,7 +71,7 @@ public class ItemController {
     @PatchMapping("/{itemId}")
     public ResponseEntity<Object> updateItem(@Validated(value = Update.class)
                                              @RequestBody ItemInDto itemInDto,
-                                             @RequestHeader(value = "X-Sharer-User-Id")
+                                             @RequestHeader(value = headerUserId)
                                              @Positive(message = "{item.controller.userIdNotPositive}")
                                              long userId,
                                              @PathVariable
