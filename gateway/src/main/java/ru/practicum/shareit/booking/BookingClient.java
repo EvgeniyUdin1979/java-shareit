@@ -15,6 +15,7 @@ import ru.practicum.shareit.client.BaseClient;
 import ru.practicum.shareit.config.CustomLocaleMessenger;
 import ru.practicum.shareit.exceptions.BookingRequestException;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 import java.util.Optional;
 
@@ -65,6 +66,17 @@ public class BookingClient extends BaseClient {
     }
 
     public ResponseEntity<Object> addBooking(long userId, BookingInDto bookingInDto) {
+        LocalDateTime start = bookingInDto.getStart();
+        LocalDateTime end = bookingInDto.getEnd();
+        if (start.isEqual(end)) {
+            String message = messenger.getMessage("booking.service.timeIsEqual");
+            log.warn("Время начала бронирования равно окончанию: {}", bookingInDto);
+            throw new BookingRequestException(message);
+        } else if (start.isAfter(end)) {
+            String message = messenger.getMessage("booking.service.startIsAfterEnd");
+            log.warn("Время начала бронирования после окончанию: {}", bookingInDto);
+            throw new BookingRequestException(message);
+        }
         return post("", userId, bookingInDto);
     }
 

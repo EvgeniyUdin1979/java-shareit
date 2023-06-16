@@ -68,8 +68,8 @@ public class CustomAdvice {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Response> typeMismatchException(MethodArgumentTypeMismatchException ex) {
-        String message = messenger.getMessage("advice.typeMismatchException");
-        log.warn("Параметр id не является числом. {}", ex.getName());
+        String message = String.format(messenger.getMessage("advice.typeMismatchException"), ex.getName());
+        log.warn("Параметр {} не является числом.", ex.getName());
         return getResponse(HttpStatus.BAD_REQUEST, message);
     }
 

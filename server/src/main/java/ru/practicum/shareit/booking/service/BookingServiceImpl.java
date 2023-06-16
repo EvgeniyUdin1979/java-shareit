@@ -22,7 +22,6 @@ import ru.practicum.shareit.item.srorages.dao.ItemStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storages.dao.UserStorage;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -66,17 +65,7 @@ public class BookingServiceImpl implements BookingService {
             log.warn("Данный предмет не доступен для бронирования: {}", bookingInDto);
             throw new BookingRequestException(message);
         }
-        LocalDateTime start = bookingInDto.getStart();
-        LocalDateTime end = bookingInDto.getEnd();
-        if (start.isEqual(end)) {
-            String message = messenger.getMessage("booking.service.timeIsEqual");
-            log.warn("Время начала бронирования равно окончанию: {}", bookingInDto);
-            throw new BookingRequestException(message);
-        } else if (start.isAfter(end)) {
-            String message = messenger.getMessage("booking.service.startIsAfterEnd");
-            log.warn("Время начала бронирования после окончанию: {}", bookingInDto);
-            throw new BookingRequestException(message);
-        }
+
         User booker = userStorage.findUserById(userId);
         Booking newest = BookingMapping.mapToBooking(bookingInDto, booker, item);
         Booking booking = bookingStorage.createBooking(newest);

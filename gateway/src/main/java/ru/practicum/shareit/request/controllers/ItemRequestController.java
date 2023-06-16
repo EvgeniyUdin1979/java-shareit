@@ -54,8 +54,8 @@ public class ItemRequestController {
     }
 
     @GetMapping("/{requestId}")
-    public ResponseEntity<Object> getByRequest(@PathVariable
-                                               @Positive(message = "{item.controller.itemIdNotPositive}") long requestId,
+    public ResponseEntity<Object> getRequestById(@PathVariable
+                                               @Positive(message = "{itemRequest.controller.itemRequestIdNotPositive}") long requestId,
                                                @RequestHeader(value = headerUserId)
                                                @Positive(message = "{item.controller.userIdNotPositive}")
                                                long userId) {
