@@ -20,7 +20,6 @@ import ru.practicum.shareit.request.storages.dao.ItemRequestStorage;
 import ru.practicum.shareit.user.model.User;
 import ru.practicum.shareit.user.storages.dao.UserStorage;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -47,9 +46,9 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<ItemOutDtoForGet> findAllByUserId(long userId) {
+    public List<ItemOutDtoForGet> findAllByUserId(long userId, int from, int size) {
         isExistsUserId(userId);
-        return itemStorage.findAllByUserId(userId).stream()
+        return itemStorage.findAllByUserId(userId, from, size).stream()
                 .map(item ->
                         MappingItem
                                 .mapToDtoForGet(
@@ -71,11 +70,8 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     @Transactional
-    public List<ItemOutDto> search(String text) {
-        if (text == null || text.isEmpty() || text.isBlank()) {
-            return new ArrayList<>();
-        }
-        return itemStorage.search(text).stream()
+    public List<ItemOutDto> search(String text, int from, int size) {
+        return itemStorage.search(text, from, size).stream()
                 .map(MappingItem::mapToDto).collect(Collectors.toList());
     }
 

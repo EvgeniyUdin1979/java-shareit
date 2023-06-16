@@ -28,8 +28,10 @@ public class ItemController {
     @GetMapping
     @Validated
     public List<ItemOutDtoForGet> findAllByUserId(@RequestHeader(value = headerUserId)
-                                                  long userId) {
-        List<ItemOutDtoForGet> allItem = service.findAllByUserId(userId);
+                                                  long userId,
+                                                  @RequestParam(name = "from", defaultValue = "0") int from,
+                                                  @RequestParam(name = "size", defaultValue = "10") int size) {
+        List<ItemOutDtoForGet> allItem = service.findAllByUserId(userId, from, size);
         log.info("Получены все предметы для пользователя с id {}.", userId);
         return allItem;
     }
@@ -56,8 +58,10 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public List<ItemOutDto> search(@RequestParam String text) {
-        List<ItemOutDto> items = service.search(text);
+    public List<ItemOutDto> search(@RequestParam String text,
+                                   @RequestParam(name = "from", defaultValue = "0") int from,
+                                   @RequestParam(name = "size", defaultValue = "10") int size) {
+        List<ItemOutDto> items = service.search(text, from, size);
         log.info("Получен список предметов по поиску: {}", text);
         return items;
     }

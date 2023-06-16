@@ -6,11 +6,11 @@ import java.util.List;
 
 public interface ItemService {
 
-    List<ItemOutDtoForGet> findAllByUserId(long userId);
+    List<ItemOutDtoForGet> findAllByUserId(long userId, int from, int size);
 
     ItemOutDtoForGet findById(long itemId, long userId);
 
-    List<ItemOutDto> search(String text);
+    List<ItemOutDto> search(String text, int from, int size);
 
     ItemOutDto create(ItemInDto itemInDto, long ownerId);
 

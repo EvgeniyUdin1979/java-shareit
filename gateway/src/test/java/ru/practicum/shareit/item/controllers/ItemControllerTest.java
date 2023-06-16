@@ -24,6 +24,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ItemControllerTest {
     private final String itemURL = "http://localhost:8080/items";
 
+    private final String userURL = "http://localhost:8080/users";
+
+
     protected static HttpServer server;
 
     @Autowired
@@ -107,6 +110,19 @@ class ItemControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk());
+    }
+
+    @ParameterizedTest
+    @CsvFileSource(resources = "/data/item/searchEmpty.csv", delimiter = '|')
+    void searchEmpty(String text, int expectedLength, String user, String item1, String item2) throws Exception {
+        mockMvc.perform(get(itemURL + "/search")
+                        .param("text", text)
+                )
+                .andDo(print())
+                .andExpectAll(
+                        status().isOk(),
+                        jsonPath("$.length()").value(expectedLength)
+                );
     }
 
     @Test

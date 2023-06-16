@@ -7,11 +7,11 @@ import java.util.List;
 
 public interface ItemStorage extends CommentRepository {
 
-    List<Item> findAllByUserId(long userId);
+    List<Item> findAllByUserId(long userId, int from, int size);
 
     Item findItemById(long id);
 
-    List<Item> search(String text);
+    List<Item> search(String text, int from, int size);
 
     Item create(Item item);
 

@@ -162,31 +162,6 @@ class ItemControllerTest {
     }
 
     @ParameterizedTest
-    @CsvFileSource(resources = "/data/item/searchEmpty.csv", delimiter = '|')
-    void searchEmpty(String text, int expectedLength, String user, String item1, String item2) throws Exception {
-        mockMvc.perform(post(userURL)
-                .content(user)
-                .contentType(MediaType.APPLICATION_JSON));
-        mockMvc.perform(post(itemURL)
-                .content(item1)
-                .header("X-Sharer-User-Id", "1")
-                .contentType(MediaType.APPLICATION_JSON));
-        mockMvc.perform(post(itemURL)
-                .content(item2)
-                .header("X-Sharer-User-Id", "1")
-                .contentType(MediaType.APPLICATION_JSON));
-
-        mockMvc.perform(get(itemURL + "/search")
-                        .param("text", text)
-                )
-                .andDo(print())
-                .andExpectAll(
-                        status().isOk(),
-                        jsonPath("$.length()").value(expectedLength)
-                );
-    }
-
-    @ParameterizedTest
     @CsvFileSource(resources = "/data/item/update.csv", delimiter = '|')
     void update(String url, String user, String item, String update, String expectedResponse) throws Exception {
         mockMvc.perform(post(userURL)

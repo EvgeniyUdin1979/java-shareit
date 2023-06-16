@@ -2,6 +2,7 @@ package ru.practicum.shareit.item.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.ItemClient;
@@ -12,9 +13,10 @@ import ru.practicum.shareit.validate.Update;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Positive;
+import javax.validation.constraints.PositiveOrZero;
 
 
-@RestController
+@Controller
 @Validated
 @RequestMapping("/items")
 public class ItemController {
@@ -31,8 +33,12 @@ public class ItemController {
     @Validated
     public ResponseEntity<Object> findAllByUserId(@RequestHeader(value = headerUserId)
                                                   @Positive(message = "{item.controller.userIdNotPositive}")
-                                                  long userId) {
-        return client.findAllByUserId(userId);
+                                                  long userId,
+                                                  @PositiveOrZero(message = "{itemRequest.controller.fromNotPositiveOrZero}")
+                                                  @RequestParam(name = "from", defaultValue = "0") int from,
+                                                  @Positive(message = "{itemRequest.controller.sizeNotPositive}")
+                                                  @RequestParam(name = "size", defaultValue = "10") int size) {
+        return client.findAllByUserId(userId, from, size);
     }
 
     @GetMapping("/{itemId}")
@@ -55,8 +61,12 @@ public class ItemController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<Object> search(@RequestParam String text) {
-        return client.search(text);
+    public ResponseEntity<Object> search(@RequestParam String text,
+                                         @PositiveOrZero(message = "{itemRequest.controller.fromNotPositiveOrZero}")
+                                         @RequestParam(name = "from", defaultValue = "0") int from,
+                                         @Positive(message = "{itemRequest.controller.sizeNotPositive}")
+                                         @RequestParam(name = "size", defaultValue = "10") int size) {
+        return client.search(text, from, size);
     }
 
     @PostMapping

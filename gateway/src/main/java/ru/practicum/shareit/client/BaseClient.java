@@ -91,7 +91,7 @@ public class BaseClient {
         return prepareGatewayResponse(shareitServerResponse);
     }
 
-    private HttpHeaders defaultHeaders(Long userId) {
+    protected HttpHeaders defaultHeaders(Long userId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.setAccept(List.of(MediaType.APPLICATION_JSON));

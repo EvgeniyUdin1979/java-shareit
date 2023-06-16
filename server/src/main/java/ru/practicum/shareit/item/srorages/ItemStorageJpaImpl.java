@@ -4,7 +4,7 @@ import com.querydsl.core.types.dsl.DateExpression;
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
@@ -39,8 +39,8 @@ public class ItemStorageJpaImpl implements ItemStorage, CommentRepository {
     }
 
     @Override
-    public List<Item> findAllByUserId(long userId) {
-        return repository.findAllByOwnerId(userId, Sort.by("id").ascending());
+    public List<Item> findAllByUserId(long userId, int from, int size) {
+        return repository.findAllByOwnerId(userId, Pageable.ofSize(size).withPage(from)).toList();
     }
 
     @Override
@@ -49,8 +49,8 @@ public class ItemStorageJpaImpl implements ItemStorage, CommentRepository {
     }
 
     @Override
-    public List<Item> search(String text) {
-        return repository.findAllByNameOrDescriptionContainsIgnoreCase(text);
+    public List<Item> search(String text, int from, int size) {
+        return repository.findAllByNameOrDescriptionContainsIgnoreCase(text, Pageable.ofSize(size).withPage(from)).toList();
     }
 
     @Override

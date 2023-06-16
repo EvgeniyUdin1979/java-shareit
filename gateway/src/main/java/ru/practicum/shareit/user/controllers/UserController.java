@@ -2,6 +2,7 @@ package ru.practicum.shareit.user.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.user.UserClient;
@@ -12,7 +13,7 @@ import ru.practicum.shareit.validate.Update;
 import javax.validation.constraints.Positive;
 
 
-@RestController
+@Controller
 @RequestMapping(path = "/users")
 @Validated
 public class UserController {
