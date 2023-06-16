@@ -1,6 +1,0 @@
-"/1"|"Пользователь с данным email уже существует."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user2","email": "user2@user.com"}|{ "name": "user2","email": "user2@user.com"}|409
-"/3"|"Пользователь с id 3 не найден."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user2","email": "user2@user.com"}|{ "name": "user3","email": "user3@user.com"}|404
-"/1"|"Не корректный электронный адрес."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user1","email": "user.com"}|{ "name": "user2","email": "user.com"}|400
-"/0"|"id не может быть отрицательным или равен 0."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user2","email": "user2@user.com"}|{ "name": "user2","email": "user2@user.com"}|400
-"/-1"|"id не может быть отрицательным или равен 0."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user2","email": "user2@user.com"}|{ "name": "user2","email": "user2@user.com"}|400
-"/а"|"Параметр id не является числом."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user2","email": "user2@user.com"}|{ "name": "user2","email": "user2@user.com"}|400

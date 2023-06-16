@@ -1,0 +1,1 @@
+"2"|"Пользователь с id 2 не найден."|{"name": "user","email": "user@user.com"}|{"name": "Дрель","description": "Простая дрель","available": true}|{"name": "Отвертка","description": "Аккумуляторная отвертка","available": true}|"X-Sharer-User-Id"|404

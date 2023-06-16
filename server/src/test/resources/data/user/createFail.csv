@@ -1,0 +1,1 @@
+"Пользователь с данным email уже существует."|{ "name": "user1","email": "user1@user.com"}|{ "name": "user1","email": "user1@user.com"}|409

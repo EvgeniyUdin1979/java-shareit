@@ -1,0 +1,2 @@
+"/2"|"Предмет с id 2 не найден."|{"name": "user","email": "user@user.com"}|"1"|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User-Id"|404
+"/1"|"Пользователь с id 2 не найден."|{"name": "user","email": "user@user.com"}|"2"|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User-Id"|404

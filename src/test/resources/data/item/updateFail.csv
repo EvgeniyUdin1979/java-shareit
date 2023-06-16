@@ -1,5 +1,0 @@
-"/2"|"Предмет с id 2 не найден."|{"name": "user","email": "user@user.com"}|"1"|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User-Id"|404
-"/-1"|"id предмета не может быть отрицательным или равен 0."|{"name": "user","email": "user@user.com"}|"1"|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User-Id"|400
-"/1"|"Пользователь с id 2 не найден."|{"name": "user","email": "user@user.com"}|"2"|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User-Id"|404
-"/1"|"Параметр id не является числом."|{"name": "user","email": "user@user.com"}|a|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User-Id"|400
-"/1"|"Отсутствует указание пользователя для данного запроса."|{"name": "user","email": "user@user.com"}|"1"|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User"|400

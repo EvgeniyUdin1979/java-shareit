@@ -1,0 +1,3 @@
+"/-1"|"id предмета не может быть отрицательным или равен 0."|{"name": "user","email": "user@user.com"}|"1"|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User-Id"|400
+"/1"|"Параметр X-Sharer-User-Id не является числом."|{"name": "user","email": "user@user.com"}|a|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User-Id"|400
+"/1"|"Отсутствует указание пользователя для данного запроса."|{"name": "user","email": "user@user.com"}|"1"|{"name": "дрель","description": "Простая дрель","available": true}|{"available": false}|"X-Sharer-User"|400

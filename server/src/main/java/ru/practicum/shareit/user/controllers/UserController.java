@@ -1,0 +1,73 @@
+package ru.practicum.shareit.user.controllers;
+
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.model.User;
+import ru.practicum.shareit.user.services.UserService;
+import ru.practicum.shareit.user.util.MappingUser;
+
+import java.util.List;
+
+
+@Slf4j
+@RestController
+@RequestMapping(path = "/users")
+@Validated
+public class UserController {
+
+    private final UserService service;
+
+    @Autowired
+    public UserController(UserService service) {
+        this.service = service;
+    }
+
+    @GetMapping
+    public List<UserDto> findAll() {
+        List<UserDto> all = service.findAll();
+        log.info("Получены все пользователи.");
+        return all;
+    }
+
+    @GetMapping("/{id}")
+    public UserDto getUserById(@PathVariable long id) {
+        UserDto user = service.findById(id);
+        log.info("Получен пользователь с id {}.", id);
+        return user;
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable long id) {
+        service.delete(id);
+        log.info("Удален пользователь с id {}.", id);
+    }
+
+    @PostMapping
+    public UserDto addUser(@RequestBody UserDto userDto) {
+        User user = MappingUser.mapToUser(userDto);
+        UserDto createUser = service.create(user);
+        log.info("Создан пользователь {}.", createUser);
+        return createUser;
+    }
+
+    @PatchMapping("/{id}")
+    public UserDto updateUser(@RequestBody UserDto userDto,
+                              @PathVariable long id) {
+        userDto.setId(id);
+        User user = MappingUser.mapToUser(userDto);
+        UserDto updateUser = service.update(user);
+        log.info("Обновлен пользователь {}.", updateUser);
+        return updateUser;
+    }
+
+    @DeleteMapping("/reset")
+    public void resetDB() {
+        service.resetDb();
+    }
+
+
+}
+
